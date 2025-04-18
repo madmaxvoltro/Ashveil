@@ -1,0 +1,3 @@
+[submodule "Loader"]
+	path = Loader
+	url = https://github.com/madmaxvoltro/InMemLoader.git
