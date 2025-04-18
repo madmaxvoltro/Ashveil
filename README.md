@@ -73,7 +73,7 @@ You can change the behavior of the C2 server by updating the code in `server.py`
 
 ```python
 # Example: Set custom port for the C2 server
-c2_port = 8080  # Change this to your desired port
+app.run(host="0.0.0.0", port=7777) # Change this to your desired port
 ```
 
 ## Safety Warning
