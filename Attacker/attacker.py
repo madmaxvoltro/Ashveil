@@ -2,7 +2,7 @@ import requests
 import time
 import argparse
 
-C2_SERVER = "http://localhost:7777"  # or your actual IP
+C2_SERVER =  "http://" + input("server ip [without port]") + ":7777"
 
 def interactive_shell(client):
     print(f"💀 NullBeacon Shell (CLI Mode) — type 'exit' to quit. Connected to {client}.\n")
