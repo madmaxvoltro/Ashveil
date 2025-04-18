@@ -25,7 +25,7 @@ This tool was created to explore the boundaries of evading detection while deplo
     ```bash
     pip install flask
     ```
-- **Tools**: You will need Python (preferably Python 3.x) to run the tool before converting it to an executable.
+- **Tools**: You will need Python (preferably Python 3.1) to run the tool before converting it to an executable.
 
 ### Setup
 
