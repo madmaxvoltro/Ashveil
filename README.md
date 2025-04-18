@@ -31,7 +31,7 @@ This tool was created to explore the boundaries of evading detection while deplo
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/Ashveil.git
+    git clone https://github.com/madmaxvoltro/Ashveil.git
     cd Ashveil
     ```
 
@@ -42,13 +42,13 @@ This tool was created to explore the boundaries of evading detection while deplo
 
 3. **Running the Tool**:
     - Start the **server**:  
-        Run `server.py` to set up the attacker’s control environment.
+        Run `server/server.py` to set up the attacker’s control environment.
         ```bash
         python server.py
         ```
 
     - Start the **attacker**:  
-        Run `attacker.py` to begin the process of deploying the backdoor.
+        Run `attacker/attacker.py` to begin the process of deploying the backdoor.
         ```bash
         python attacker.py
         ```
@@ -80,7 +80,7 @@ c2_port = 8080  # Change this to your desired port
 
 **Ashveil** is a **highly dangerous tool** that can be used as a cyber weapon. It has the potential to cause significant damage if misused. This tool is only intended for **educational purposes** and should be used **ONLY in controlled environments** such as virtual machines or isolated networks.
 
-- **Level of Danger**: This tool is rated **95/100** on the scale of cyberweapon danger.
+- **Level of Danger**: This tool is rated **95/100** on the scale of danger this can be seen as a cyber weapon.
 - **Important**: It is **your responsibility** to ensure this tool is not used for malicious purposes. The creator will not be held liable for any damages or illegal actions taken using this tool.
 
 ## License
@@ -89,7 +89,7 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 ## Acknowledgments
 
-- **Rootkit Code**: The rootkit used in this project was not created by the author but was sourced from another project. Credits go to the original creator for the rootkit code.
+- **Rootkit Code**: The rootkit used in this project was **not created by the author** but was sourced from another project. Credits go to the original creator for the rootkit code byte77.
   
 ## Contact
 
