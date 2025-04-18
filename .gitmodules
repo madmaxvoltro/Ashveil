@@ -1,3 +1,6 @@
 [submodule "Loader"]
 	path = Loader
 	url = https://github.com/madmaxvoltro/InMemLoader.git
+[submodule "Installer"]
+	path = Installer
+	url = https://github.com/madmaxvoltro/Ashveil_installer.git
