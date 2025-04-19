@@ -87,6 +87,12 @@ app.run(host="0.0.0.0", port=7777) # Change this to your desired port
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
+## Ethics & Responsible Use
+
+Ashveil is designed solely for educational purposes, ethical red teaming, and malware research training in controlled, consent-based environments. It must never be used on real systems without explicit permission.
+
+By using this tool, you agree to abide by all applicable laws and responsible disclosure practices.
+
 ## Acknowledgments
 
 - **Rootkit Code**: The rootkit used in this project was **not created by the author** but was sourced from another project. Credits go to the original creator for the rootkit code byte77.
