@@ -23,7 +23,7 @@ This tool was created to explore the boundaries of evading detection while deplo
 
 ## payloads
 current payloads in ashveil 
-- **SHELl**: a remote to the client if the client is also running the rootkit the shell will have elevated permission.
+- **SHELL**: a remote to the client if the client is also running the rootkit the shell will have elevated permission.
 
 ## Installation
 
