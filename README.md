@@ -15,15 +15,16 @@ This tool was created to explore the boundaries of evading detection while deplo
 - **Memory-based Execution**: Executes and compiles code directly in system memory without writing to disk, making it harder to detect with traditional signature-based tools.
 - **C2 Communication**: Connects to a **Command and Control (C2)** server to allow remote control of the victim machine. Payloads and behavior can be modified via the C2 server.
 - **Dynamic Payloads**: The payload can be modified easily in the `server.py` and `attacker.py` files, allowing flexibility for different attack scenarios.
+- **payload selection**: you wil be able to select the payload on startup on the server this will be global for all clients downloading the payload 
 
 ## comming features
-- **aes encryption for**: The payload will be encrypted when sent over the network.
-- **payload selection**: you wil be able to select the payload on startup on the server this will be global for all clients downloading the payload 
+- **aes encryption**: The payload will be encrypted when sent over the network.
 - **new payloads**: new payloads will be coming 
 
 ## payloads
 current payloads in ashveil 
 - **SHELL**: a remote to the client if the client is also running the rootkit the shell will have elevated permission.
+- **keylogger**: a simple script that will log everything the user types and sends it back to the server and in a .log
 
 ## Installation
 
