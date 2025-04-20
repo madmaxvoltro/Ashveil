@@ -16,6 +16,15 @@ This tool was created to explore the boundaries of evading detection while deplo
 - **C2 Communication**: Connects to a **Command and Control (C2)** server to allow remote control of the victim machine. Payloads and behavior can be modified via the C2 server.
 - **Dynamic Payloads**: The payload can be modified easily in the `server.py` and `attacker.py` files, allowing flexibility for different attack scenarios.
 
+## comming features
+- **aes encryption for**: The payload will be encrypted when sent over the network.
+- **payload selection**: you wil be able to select the payload on startup on the server this will be global for all clients downloading the payload 
+- **new payloads**: new payloads will be coming 
+
+## payloads
+current payloads in ashveil 
+- **SHELL**: a remote to the client if the client is also running the rootkit the shell will have elevated permission.
+
 ## Installation
 
 ### Prerequisites
@@ -86,6 +95,12 @@ app.run(host="0.0.0.0", port=7777) # Change this to your desired port
 ## License
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+## Ethics & Responsible Use
+
+Ashveil is designed solely for educational purposes, ethical red teaming, and malware research training in controlled, consent-based environments. It must never be used on real systems without explicit permission.
+
+By using this tool, you agree to abide by all applicable laws and responsible disclosure practices.
 
 ## Acknowledgments
 
