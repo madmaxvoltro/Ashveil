@@ -58,7 +58,7 @@ def adjust_payload():
 
 def ask_if_forwarded():
     global forwarded  # Make sure we're modifying the global variable
-    print("Do you have your port open?")
+    # print("Do you have your port open?")
     term = Terminal()
 
     menu = ['Yes', 'No', 'Exit']
@@ -66,10 +66,9 @@ def ask_if_forwarded():
     forwarded = None  # Initialize the variable
 
     with term.fullscreen(), term.cbreak(), term.hidden_cursor():
-        print(term.clear)
-        print("Do you have a forwarded port?")
+        print(term.clear)      
         while True:
-            print(term.move_yx(0, 0))
+            print(term.move_yx(0, 0) + term.bold("==== Do you have a forwarded port? ====\n"))
             for i, item in enumerate(menu):
                 if i == selected:
                     print(term.underline + item + term.normal)
