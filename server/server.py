@@ -3,6 +3,9 @@ import os
 import time
 from blessed import Terminal
 import socket
+import signal
+import atexit
+
 
 app = Flask(__name__)
 
@@ -55,6 +58,39 @@ def adjust_payload():
 
         print(f"[*] Adjusted URL in {file_name} to {ip_address}")
 
+def revert_payloads():
+    global forwarded, available_code_files
+    ip_address = "localhost"
+    if forwarded:
+        ip_address = socket.gethostbyname(socket.gethostname())
+
+    for file_name in available_code_files:
+        file_path = os.path.join(CODE_DIR, file_name)
+        with open(file_path, "r") as file:
+            content = file.read()
+
+        new_content = content.replace(f"http://{ip_address}:7777", "URL_PLACEHOLDER")
+
+        with open(file_path, "w") as file:
+            file.write(new_content)
+
+        print(f"[*] Reverted URL in {file_name} to placeholder")
+
+def handle_shutdown(signum, frame):
+    print("\n[*] Caught shutdown signal. Cleaning up...")
+    revert_payloads()
+    print("[*] Cleanup complete. Exiting.")
+    os.system('cls' if os.name == 'nt' else 'clear')
+    info()
+    exit(0)
+
+# Register handlers for SIGINT (Ctrl+C) and SIGTERM
+signal.signal(signal.SIGINT, handle_shutdown)
+signal.signal(signal.SIGTERM, handle_shutdown)
+
+# Optional: Also register with atexit for non-signal exits
+atexit.register(revert_payloads)
+
 
 def ask_if_forwarded():
     global forwarded  # Make sure we're modifying the global variable
@@ -98,7 +134,7 @@ def ask_if_forwarded():
         if forwarded is None:
             print("No selection made. Exiting...")
             exit(0)  # Exit the program if no selection is made
-            
+
 @app.route('/download', methods=['GET'])
 def download_exe():
     filename = 'install.exe'

