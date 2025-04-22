@@ -98,10 +98,7 @@ def ask_if_forwarded():
         if forwarded is None:
             print("No selection made. Exiting...")
             exit(0)  # Exit the program if no selection is made
-
-EXE_DIR = r'C:\Users\mxmla\Downloads\r77Rootkit 1.7.0\install.exe'
-MEM_DIR = r'C:\Users\mxmla\source\repos\InMemLoader\InMemLoader\bin\Debug\net8.0\InMemLoader.exe'
-
+            
 @app.route('/download', methods=['GET'])
 def download_exe():
     filename = 'install.exe'
