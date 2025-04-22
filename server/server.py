@@ -15,6 +15,8 @@ UPLOAD_DIR = os.path.join(CURRENT_DIR, "uploads")
 FILE_NAME = 'InMemLoader.exe'
 clean_name = 'clean.bat'
 forwarded = False
+EXE_DIR = r''
+MEM_DIR = r''
 
 os.makedirs(CODE_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -23,7 +25,7 @@ available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.pat
 selected_code_file = None
 
 
-def info():
+def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')
     print(" ░█████╗░░██████╗██╗░░██╗██╗░░░██╗███████╗██╗██╗░░░░░")
     print("  ██╔══██╗██╔════╝██║░░██║██║░░░██║██╔════╝██║██║░░░░░")
@@ -31,13 +33,17 @@ def info():
     print("  ██╔══██║░╚═══██╗██╔══██║░╚████╔╝░██╔══╝░░██║██║░░░░░")
     print("  ██║░░██║██████╔╝██║░░██║░░╚██╔╝░░███████╗██║███████╗")
     print("  ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
+    if (message == ''):
+        return True
+    else:
+       print("=========  " + f"{message}" + "  ========")
     time.sleep(0.5)
 
 
 def adjust_payload():
     global forwarded, available_code_files
     # Get the public IP or local IP based on the forwarded flag
-    ip_address = "localhost"  # default local IP
+    ip_address = "127.0.0.1"  # default local IP
     if forwarded:
         ip_address = socket.gethostbyname(socket.gethostname())  # Get the local machine IP
 
@@ -60,7 +66,7 @@ def adjust_payload():
 
 def revert_payloads():
     global forwarded, available_code_files
-    ip_address = "localhost"
+    ip_address = "127.0.0.1"
     if forwarded:
         ip_address = socket.gethostbyname(socket.gethostname())
 
@@ -81,7 +87,7 @@ def handle_shutdown(signum, frame):
     revert_payloads()
     print("[*] Cleanup complete. Exiting.")
     os.system('cls' if os.name == 'nt' else 'clear')
-    info()
+    info("hope to see you again soon :)")
     exit(0)
 
 # Register handlers for SIGINT (Ctrl+C) and SIGTERM
@@ -322,7 +328,7 @@ def list_clients():
 # ==== Run Server ====
 if __name__ == "__main__":
 
-    info()
+    info('')
     ask_if_forwarded()  # Ask if port is forwarded
     adjust_payload()  # Adjust all payload files based on forwarding status
     choose_code_file()  # Let the user choose a payload file
