@@ -20,6 +20,7 @@ This tool was created to explore the boundaries of evading detection while deplo
 ## comming features
 - **aes encryption**: The payload will be encrypted when sent over the network.
 - **new payloads**: new payloads will be coming 
+ex. passwords stealer, viewer(live view of pc)
 - **easy Installation**: we are creating a new installer so you can infected the victim with only 1 command
 
 ## payloads
