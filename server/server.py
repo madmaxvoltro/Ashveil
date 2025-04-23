@@ -17,6 +17,7 @@ clean_name = 'clean.bat'
 forwarded = False
 EXE_DIR = r''
 MEM_DIR = r''
+port = 7777
 
 os.makedirs(CODE_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -36,7 +37,7 @@ def info(message):
     if (message == ''):
         return True
     else:
-       print("=========  " + f"{message}" + "  ========")
+       print("==========  " + f"{message}" + "  =========")
     time.sleep(0.5)
 
 
@@ -56,7 +57,7 @@ def adjust_payload():
             content = file.read()
 
         # Modify the URL in the selected code file
-        new_content = content.replace("URL_PLACEHOLDER", f"http://{ip_address}:7777")
+        new_content = content.replace("URL_PLACEHOLDER", f"http://{ip_address}:{port}")
 
         # Write the changes back to the file
         with open(file_path, "w") as file:
@@ -75,7 +76,7 @@ def revert_payloads():
         with open(file_path, "r") as file:
             content = file.read()
 
-        new_content = content.replace(f"http://{ip_address}:7777", "URL_PLACEHOLDER")
+        new_content = content.replace(f"http://{ip_address}:{port}", "URL_PLACEHOLDER")
 
         with open(file_path, "w") as file:
             file.write(new_content)
@@ -110,7 +111,7 @@ def ask_if_forwarded():
     with term.fullscreen(), term.cbreak(), term.hidden_cursor():
         print(term.clear)      
         while True:
-            print(term.move_yx(0, 0) + term.bold("==== Do you have a forwarded port? ====\n"))
+            print(term.move_yx(0, 0) + term.bold("==== Do you have a forwarded port (7777)? ====\n"))
             for i, item in enumerate(menu):
                 if i == selected:
                     print(term.underline + item + term.normal)
@@ -332,4 +333,4 @@ if __name__ == "__main__":
     ask_if_forwarded()  # Ask if port is forwarded
     adjust_payload()  # Adjust all payload files based on forwarding status
     choose_code_file()  # Let the user choose a payload file
-    app.run(host="0.0.0.0", port=7777)
+    app.run(host="0.0.0.0", port=port)

