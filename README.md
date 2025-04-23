@@ -14,7 +14,7 @@ This tool was created to explore the boundaries of evading detection while deplo
 - **DLL Injection**: Injects shellcode into a target process to install the backdoor without being detected by antivirus or system defenses.
 - **Memory-based Execution**: Executes and compiles code directly in system memory without writing to disk, making it harder to detect with traditional signature-based tools.
 - **C2 Communication**: Connects to a **Command and Control (C2)** server to allow remote control of the victim machine. Payloads and behavior can be modified via the C2 server.
-- **Dynamic Payloads**: The payload can be modified easily in the `server.py` and `attacker.py` files, allowing flexibility for different attack scenarios.
+- **Dynamic Payloads**: The payload can be modified easily in the `server.py` file, allowing flexibility for different attack scenarios.
 - **payload selection**: you wil be able to select the payload on startup on the server this will be global for all clients downloading the payload 
 
 ## comming features
