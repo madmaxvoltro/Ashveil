@@ -20,6 +20,7 @@ This tool was created to explore the boundaries of evading detection while deplo
 ## comming features
 - **aes encryption**: The payload will be encrypted when sent over the network.
 - **new payloads**: new payloads will be coming 
+- **easy Installation**: we are creating a new installer so you can infected the victim with only 1 command
 
 ## payloads
 current payloads in ashveil 
@@ -54,17 +55,17 @@ current payloads in ashveil
     - Start the **server**:  
         Run `server/server.py` to set up the attacker’s control environment.
         ```bash
-        python server.py
+        python server/server.py
         ```
 
     - Start the **attacker**:  
-        Run `attacker/attacker.py` to begin the process of deploying the backdoor.
+        Run `attacker/attacker.py` to take controll of the  user with the selected payload.
         ```bash
-        python attacker.py
+        python attacker/attacker.py
         ```
 
 4. **Injection Process**:
-    - The tool will inject the installer into a victim process using **DLL injection**.
+    - The tool will be downloaded in the roaming folder.
     - The rootkit is installed into system memory, with no files written to disk.
     - After installation, the victim system connects back to the attacker's C2 server, allowing for remote control.
 
@@ -72,18 +73,21 @@ current payloads in ashveil
 
 ### Modifying the Payload
 
-The payload and its behavior can be easily modified by editing the `server.py` file. The **payload** is written in C# and is compiled and executed directly in memory. You can modify the code to suit specific needs or use a different payload.
+The payload and its behavior can be easily modified by editing the the payloads in ``server/payloads/`` here you can create new payloads who will be auto implemented into the selection menu or you can modifying the existing payloads
 
-1. Open the `server.py` and look for the payload section to customize it.
-2. The payload will be compiled and executed in memory on the victim machine, so there is no need for file-based delivery.
+1. open ``server/payload/``
+2. create a new cs file and implement your code
+3. restart the server
+
+> payloads can only be in c#
 
 ### Customizing the C2 Server
 
-You can change the behavior of the C2 server by updating the code in `server.py`. For example, you can configure it to handle different kinds of malicious payloads or update the communication protocol.
+You can change the behavior of the C2 server will be asked at startup but you can also change the communication parts for example the port
 
 ```python
 # Example: Set custom port for the C2 server
-app.run(host="0.0.0.0", port=7777) # Change this to your desired port
+port = 7777 # Change this to your desired port
 ```
 
 ## Safety Warning
