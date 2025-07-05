@@ -2,116 +2,104 @@
 
 ## Overview
 
-**Ashveil** is a powerful Windows-based tool designed to demonstrate advanced malware techniques, including **DLL injection**, **memory-based code execution**, and **C2 (Command and Control) server communication**. The tool is focused on providing an educational insight into **rootkit installation** and **stealth operations**. It demonstrates how a backdoor can be installed on a victim machine, how it can stay undetected by common monitoring tools, and how an attacker can control it remotely via a C2 server.
+**Ashveil** is a powerful Windows-based tool designed to demonstrate advanced cybersecurity techniques, including **DLL injection**, **memory-based code execution**, and **C2 (Command and Control) server communication**. This tool provides a deep dive into **rootkit installation** and **stealth operations**, showcasing how attackers can gain remote control over compromised machines while evading common detection methods.
 
-This tool was created to explore the boundaries of evading detection while deploying dangerous payloads. It is crucial to note that this tool is **extremely dangerous** in the wrong hands and can be classified as a **cyber weapon** due to its capabilities. 
+**Important Warning**: Ashveil is a highly dangerous tool that can be used to compromise and control systems. It is strictly intended for **educational purposes** within controlled environments, such as penetration testing, ethical hacking, or malware research. **Unauthorized use is illegal** and carries significant legal risks.
 
-> **Disclaimer:** This tool is for **educational purposes only**. Misuse or deployment in unauthorized environments is strictly prohibited. The creator is not responsible for any damage caused by this tool.
+> **Disclaimer**: The creator is not responsible for any damage, harm, or illegal activity caused by the use or misuse of this tool. The tool should only be used in environments where the user has **explicit permission**.
 
 ## Features
 
-- **Rootkit Installation**: Injects a rootkit into the victim's system to conceal processes and activity from monitoring tools like Task Manager and Windows Explorer.
-- **DLL Injection**: Injects shellcode into a target process to install the backdoor without being detected by antivirus or system defenses.
-- **Memory-based Execution**: Executes and compiles code directly in system memory without writing to disk, making it harder to detect with traditional signature-based tools.
-- **C2 Communication**: Connects to a **Command and Control (C2)** server to allow remote control of the victim machine. Payloads and behavior can be modified via the C2 server.
-- **Dynamic Payloads**: The payload can be modified easily in the `server.py` file, allowing flexibility for different attack scenarios.
-- **payload selection**: you wil be able to select the payload on startup on the server this will be global for all clients downloading the payload 
+- **Rootkit Installation**: Conceals malicious processes and files to evade detection from system monitoring tools (e.g., Task Manager and Windows Explorer).
+- **DLL Injection**: Injects code into a target process to install a backdoor, bypassing traditional antivirus defenses.
+- **Memory-based Execution**: Executes code directly in system memory, leaving no trace on disk and avoiding signature-based detection.
+- **C2 Communication**: Allows the attacker to remotely control the compromised system via a C2 server. Payloads and actions can be modified in real-time.
+- **Web Dashboard**: A user-friendly web interface to manage and monitor all connected clients, facilitating payload control and monitoring of infected systems.
 
-## comming features
-- **aes encryption**: The payload will be encrypted when sent over the network.
-- **new payloads**: new payloads will be coming 
-ex. passwords stealer, viewer(live view of pc)
-- **easy Installation**: we are creating a new installer so you can infected the victim with only 1 command
+## Upcoming Features
 
-## payloads
-current payloads in ashveil 
-- **SHELL**: a remote to the client if the client is also running the rootkit the shell will have elevated permission.
-- **keylogger**: a simple script that will log everything the user types and sends it back to the server and in a .log
+- **AES Encryption**: Payloads will be encrypted for secure communication over the network.
+- **New Payloads**: Additional payloads will be developed, including a password stealer and a live viewer (real-time screen capture).
+- **More Payload Options**: Future updates will include the ability to create custom payloads in shellcode.
+- **Obfuscation Techniques**: Enhanced methods to avoid detection by antivirus software and other security tools.
+- **Self-Maintenance**: Adding watchdogs and automatic updates for better tool functionality and longevity.
+
+## Current Payloads
+
+- **SHELL**: A remote shell that allows the attacker to execute commands on the victim machine. If the victim is running the rootkit, elevated permissions can be granted.
+- **Keylogger**: Captures and logs all keystrokes typed by the user, sending the log back to the C2 server.
 
 ## Installation
 
 ### Prerequisites
 
-- **Operating System**: Windows
-- **Dependencies**: `Flask` (for the C2 server)
+- **Operating System**: Windows (tested on Windows 10)
+- **Dependencies**: Install required Python libraries by running:
     ```bash
-    pip install flask
+    pip install -r requirements.txt
     ```
-- **Tools**: You will need Python (preferably Python 3.1) to run the tool before converting it to an executable.
 
 ### Setup
 
-1. Clone the repository:
+1. **Clone the Repository**:
     ```bash
     git clone https://github.com/madmaxvoltro/Ashveil.git
     cd Ashveil
     ```
 
-2. Install dependencies:
+2. **Install Dependencies**:
     ```bash
-    pip install flask
+    pip install -r requirements.txt
     ```
 
-3. **Running the Tool**:
-    - Start the **server**:  
-        Run `server/server.py` to set up the attacker’s control environment.
-        ```bash
-        python server/server.py
-        ```
+3. **Configure the Victim Executable**:
+   Set the victim executable to connect back to your server’s IP address.
+   ```bash
+   loader/InMemLoader.exe -SetIp <your ip>
 
-    - Start the **attacker**:  
-        Run `attacker/attacker.py` to take controll of the  user with the selected payload.
-        ```bash
-        python attacker/attacker.py
-        ```
+4. **Running the Tool:**
+   **Start the Server:** The server controls the attacker's environment and client connections.
+   ```bash
+   python server/server.py
+   ```
 
-4. **Injection Process**:
-    - The tool will be downloaded in the roaming folder.
-    - The rootkit is installed into system memory, with no files written to disk.
-    - After installation, the victim system connects back to the attacker's C2 server, allowing for remote control.
-
+5. **start the Attacker:** This will execute the payload on the victim machine.
+   ```bash
+   python attacker/attacker.py
+   ```
 ## Configuration
-
-### Modifying the Payload
-
-The payload and its behavior can be easily modified by editing the the payloads in ``server/payloads/`` here you can create new payloads who will be auto implemented into the selection menu or you can modifying the existing payloads
-
-1. open ``server/payload/``
-2. create a new cs file and implement your code
-3. restart the server
-
-> payloads can only be in c#
+### Modifying the Payload 
+The payload and its behavior can be easily modified in the ``server/payloads/`` directory. You can create new payloads or modify existing ones by following these steps:
+1. Open the ``server/payloads/`` directory.
+2. Create a new C# file with your payload code or edit an existing one.
+3. Restart the server to load the new or modified payload.
+> **Note:** Payloads must be written in C# for compatibility with the tool.
 
 ### Customizing the C2 Server
-
-You can change the behavior of the C2 server will be asked at startup but you can also change the communication parts for example the port
-
+You can adjust the behavior of the C2 server, including changing the communication port. For example, to change the server's port:
 ```python
 # Example: Set custom port for the C2 server
-port = 7777 # Change this to your desired port
-```
+port = 7777  # Change this to your desired port
+```     
+### important Safety & Legal Warnings
+**Ashveil** is a **highly dangerous tool** capable of causing significant damage if used irresponsibly. It is classified as a **cyber weapon** due to its potential for malicious misuse.**
 
-## Safety Warning
+### Use Only in Ethical and Legal Environments
+- **Ethical Use: Ashveil** should be used only in controlled environments, such as penetration testing labs, where you have **explicit consent** from the system owner.
+- **Unauthorized Use:** Using this tool on systems without permission is **illegal** and punishable by law. The creator will not be held liable for any illegal actions or damage caused by this tool.
 
-**Ashveil** is a **highly dangerous tool** that can be used as a cyber weapon. It has the potential to cause significant damage if misused. This tool is only intended for **educational purposes** and should be used **ONLY in controlled environments** such as virtual machines or isolated networks.
+### License
+This project is licensed under the MIT License – see the (LICENSE)[https://github.com/madmaxvoltro/Ashveil/blob/main/LICENSE] file for details.
 
-- **Level of Danger**: This tool is rated **95/100** on the scale of danger this can be seen as a cyber weapon.
-- **Important**: It is **your responsibility** to ensure this tool is not used for malicious purposes. The creator will not be held liable for any damages or illegal actions taken using this tool.
+However, please note that this tool is only intended for educational and ethical research purposes. It should not be used for illegal activities. Misuse could result in legal consequences.
 
-## License
+### Ethics & Responsible Use
+**Ashveil** was created to provide educational insights into malware techniques and cybersecurity research. It is meant for **ethical hacking**, **red teaming**, and **penetration testing**    only. Use this tool exclusively in environments where you have explicit permission and legal authorization.
 
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+Never use this tool on systems you do not own or have express permission to test. Always adhere to best practices for responsible disclosure and cybersecurity.
 
-## Ethics & Responsible Use
+### Acknowledgments
+- **Rootkit Code:** The rootkit used in this project is based on code from another open-source project. Credits go to the original author, byte77.
 
-Ashveil is designed solely for educational purposes, ethical red teaming, and malware research training in controlled, consent-based environments. It must never be used on real systems without explicit permission.
-
-By using this tool, you agree to abide by all applicable laws and responsible disclosure practices.
-
-## Acknowledgments
-
-- **Rootkit Code**: The rootkit used in this project was **not created by the author** but was sourced from another project. Credits go to the original creator for the rootkit code byte77.
-  
-## Contact
-
-If you have any questions or need further assistance, feel free to reach out.
+### Contact 
+If you have any questions, feedback, or need assistance, feel free to contact me via issues

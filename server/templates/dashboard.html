@@ -1,244 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ashveil</title>
-  <style>
-    :root {
-      --bg: #140c1e;
-      --card-bg: #221331;
-      --accent: #c084fc;
-      --text: #e0d8f9;
-      --highlight: rgba(255, 255, 255, 0.07);
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashveil Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2f2a7d; /* Dark purple background */
+            margin: 0;
+            padding: 0;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: flex-start;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+        header {
+            background-color: #1e1b59;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
+        main {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
 
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
 
-    /* Hero */
-    .hero {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      background: linear-gradient(160deg, #1e1030, #140c1e);
-      animation: fadeIn 1.5s ease;
-    }
+        .card {
+            background-color: #3a3484;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 30%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
 
-    .hero h1 {
-      font-size: 5rem;
-      padding: 1rem 3rem;
-      background: var(--highlight);
-      border-radius: 12px;
-      backdrop-filter: blur(5px);
-      color: var(--accent);
-      animation: slideDown 1.5s ease;
-    }
+        .card:hover {
+            transform: translateY(-10px);
+        }
 
-    .dashboard-btn {
-      margin-top: 2rem;
-      padding: 0.8rem 2.5rem;
-      border: 2px solid var(--accent);
-      background: transparent;
-      color: var(--accent);
-      border-radius: 8px;
-      font-size: 1.2rem;
-      transition: 0.3s ease;
-      cursor: pointer;
-    }
+        .card h3 {
+            margin-top: 0;
+        }
 
-    .dashboard-btn:hover {
-      background: #fff;
-      color: #140c1e;
-      transform: scale(1.05);
-    }
+        .btn {
+            background-color: #6a59e0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
 
-    /* Dashboard Cards */
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      padding: 5rem 2rem;
-      background: #1b1129;
-    }
+        .btn:hover {
+            background-color: #5438c6;
+        }
 
-    .card {
-      background: var(--card-bg);
-      padding: 2rem;
-      border-radius: 16px;
-      width: 300px;
-      max-width: 90%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeInUp 1s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      position: relative;
-    }
+        .logs-container {
+            background-color: #1d1b60;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
 
-    .card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
+        .logs-container pre {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #ccc;
+        }
 
-    .card h3 {
-      color: var(--accent);
-      font-size: 1.4rem;
-    }
+        footer {
+            text-align: center;
+            background-color: #1e1b59;
+            color: #fff;
+            padding: 1rem;
+            font-size: 14px;
+        }
 
-    .card p {
-      color: #c9bedc;
-      font-size: 0.95rem;
-    }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 2px solid #4e4a9b;
+        }
 
-    .card ul {
-      list-style: none;
-      padding-left: 1rem;
-      color: #bbb;
-    }
+        .status-item {
+            font-size: 16px;
+        }
 
-    .card ul li::before {
-      content: '⟶';
-      margin-right: 6px;
-      color: var(--accent);
-    }
+        .status-item span {
+            font-weight: bold;
+        }
 
-    .card .badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: var(--accent);
-      color: #140c1e;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.75rem;
-      border-radius: 4px;
-    }
+        .status-item.success {
+            color: #2ecc71;
+        }
 
-    /* Divider */
-    .divider {
-      text-align: center;
-      color: #777;
-      margin: 2rem auto;
-      font-size: 1rem;
-    }
+        .status-item.error {
+            color: #e74c3c;
+        }
 
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: #100817;
-      color: #888;
-      font-size: 0.9rem;
-    }
+        .status-item.neutral {
+            color: #f39c12;
+        }
 
-    footer span {
-      display: block;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 3rem;
-      }
-      .features {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-  </style>
+    </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>Ashveil</h1>
-    <a href="/dashboard">
-      <button class="dashboard-btn">Dashboard</button>
-    </a>
-  </section>
+<header>
+    <h1>Ashveil Dashboard</h1>
+    <p>Real-time log and server management interface</p>
+</header>
 
-  <!-- Feature Dashboard Cards -->
-  <section class="features">
-    <div class="card">
-      <span class="badge">Core</span>
-      <h3>Rootkit Module</h3>
-      <p>Installs a persistent rootkit that hides processes, files, and registry entries from user tools.</p>
-      <ul>
-        <li>Process hiding</li>
-        <li>Stealth startup</li>
-        <li>AV evasion</li>
-      </ul>
+<main>
+    <!-- Status bar for real-time info -->
+    <div class="status-bar">
+        <div class="status-item">
+            Server Status: <span class="success">Running</span>
+        </div>
+        <div class="status-item">
+            Clients Connected: <span class="neutral">{{ client_count }}</span>
+        </div>
+        <div class="status-item">
+            Current Payload: <span class="success">{{ current_payload }}</span>
+        </div>
     </div>
 
-    <div class="card">
-      <span class="badge">Live</span>
-      <h3>Command & Control</h3>
-      <p>Full remote access using encrypted payloads and socket control through C2 interface.</p>
-      <ul>
-        <li>Payload streaming</li>
-        <li>Shell access</li>
-        <li>Payload selector</li>
-      </ul>
+    <!-- Card Section -->
+    <div class="card-container">
+        <div class="card">
+            <h3>Server Info</h3>
+            <p>Status: <span class="success">{{ server_status }}</span></p>
+            <button class="btn" onclick="deployPayload()">Deploy Payload</button>
+        </div>
+        <div class="card">
+            <h3>Active Clients</h3>
+            <p>Currently connected: <span class="neutral">{{ client_count }}</span></p>
+            <button class="btn" onclick="broadcastCommand()">Broadcast Command</button>
+        </div>
+        <div class="card">
+            <h3>Payload Settings</h3>
+            <p>Selected Payload: <span class="success">{{ current_payload }}</span></p>
+            <select id="payloadSelect" class="btn" onchange="changePayload()">
+                {% for payload in payloads %}
+                    <option value="{{ payload }}" {% if payload == current_payload %}selected{% endif %}>{{ payload }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
-    <div class="card">
-      <span class="badge">Tools</span>
-      <h3>Keylogger & Shell</h3>
-      <p>Active payloads include a silent keylogger and command shell with elevated permission support.</p>
-      <ul>
-        <li>Keystroke logging</li>
-        <li>Auto-send logs</li>
-        <li>Root access shell</li>
-      </ul>
+    <!-- Logs Section -->
+    <div class="logs-container">
+        <h3>Server Logs</h3>
+        <pre id="logs">{{ logs | join('\n') }}</pre>
     </div>
-  </section>
+</main>
 
-  <!-- Divider -->
-  <div class="divider">▼ Ashveil is an educational malware simulation tool ▼</div>
+<footer>
+    <p>&copy; 2023 Ashveil - All Rights Reserved</p>
+</footer>
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Ashveil Project – Educational Use Only</p>
-    <span>This site is for demonstration purposes only. Do not use in real-world systems. The creators are not liable for misuse.</span>
-  </footer>
+<script>
+    // Fetch logs periodically
+    async function updateLogs() {
+        try {
+            const res = await fetch('/logs');
+            const data = await res.json();
+            const logDiv = document.getElementById('logs');
+            logDiv.textContent = data.logs.join('\n');
+            logDiv.scrollTop = logDiv.scrollHeight;
+        } catch (e) {
+            console.error('Failed to fetch logs', e);
+        }
+    }
+
+    // Call function to fetch logs every 2 seconds
+    setInterval(updateLogs, 2000);
+
+    // Change the payload by sending a request to the Flask backend
+    function changePayload() {
+        const selectedPayload = document.getElementById('payloadSelect').value;
+        fetch('/deploy', {
+            method: 'POST',
+            body: new URLSearchParams({ payload: selectedPayload })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Payload updated:", data);
+        });
+    }
+
+    // Trigger broadcast command
+    function broadcastCommand() {
+        const command = prompt("Enter the command to broadcast:");
+        if (command) {
+            fetch('/broadcast', {
+                method: 'POST',
+                body: command
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Command broadcasted:", data);
+            });
+        }
+    }
+
+    // Function to deploy selected payload
+    function deployPayload() {
+        alert('Deploying payload...');
+        fetch('/deploy', {
+            method: 'POST',
+            body: new URLSearchParams({ payload: document.getElementById('payloadSelect').value })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Payload deployed:", data);
+        });
+    }
+</script>
 
 </body>
 </html>

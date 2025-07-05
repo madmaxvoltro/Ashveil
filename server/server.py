@@ -27,8 +27,12 @@ selected_code_file = None
 
 # pages
 @app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/dashboard')
 def dashboard():
-    return render_template('indexs.html')
+    return render_template('dashboard.html')
 
 def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')
