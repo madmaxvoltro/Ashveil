@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, jsonify, Response
+from flask import Flask, request, send_from_directory, jsonify, Response, render_template
 import os
 import time
 from blessed import Terminal
@@ -25,6 +25,10 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.path.join(CODE_DIR, f))]
 selected_code_file = None
 
+# pages
+@app.route('/')
+def dashboard():
+    return render_template('indexs.html')
 
 def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')
