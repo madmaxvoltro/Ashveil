@@ -89,7 +89,7 @@ port = 7777  # Change this to your desired port
 - **Unauthorized Use:** Using this tool on systems without permission is **illegal** and punishable by law. The creator will not be held liable for any illegal actions or damage caused by this tool.
 
 ### License
-This project is licensed under the MIT License – see the (LICENSE)[https://github.com/madmaxvoltro/Ashveil/blob/main/LICENSE] file for details.
+This project is licensed under the MIT License – see the [LICENSE](https://github.com/madmaxvoltro/Ashveil/blob/main/LICENSE) file for details.
 
 However, please note that this tool is only intended for educational and ethical research purposes. It should not be used for illegal activities. Misuse could result in legal consequences.
 
