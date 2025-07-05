@@ -48,6 +48,24 @@ def info(message):
        print("==========  " + f"{message}" + "  =========")
     time.sleep(0.5)
 
+if not os.path.exists('screenshots'):
+    os.makedirs('screenshots')
+
+@app.route('/upload', methods=['POST'])
+def upload_screenshot():
+    try:
+        # Get the file from the request
+        file = request.files['file']
+        
+        if file:
+            # Save the image to the 'screenshots' folder with a unique name
+            file_path = os.path.join('screenshots', f"screenshot_{int(time.time())}.jpg")
+            file.save(file_path)
+            return "Screenshot received successfully!", 200
+        else:
+            return "No file received.", 400
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
 def adjust_payload():
     global forwarded, available_code_files
