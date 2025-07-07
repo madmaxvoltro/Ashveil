@@ -43,7 +43,7 @@
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/madmaxvoltro/Ashveil.git
+    git clone --recurse-submodules https://github.com/madmaxvoltro/Ashveil.git
     cd Ashveil
     ```
 
