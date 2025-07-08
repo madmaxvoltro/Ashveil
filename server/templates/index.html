@@ -3,242 +3,309 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ashveil</title>
+  <title>Ashveil Slider</title>
+  <link href="https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
   <style>
-    :root {
-      --bg: #140c1e;
-      --card-bg: #221331;
-      --accent: #c084fc;
-      --text: #e0d8f9;
-      --highlight: rgba(255, 255, 255, 0.07);
-    }
-
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Hero */
-    .hero {
-      height: 100vh;
+      background-color: #140c1e;
+      min-height: 100vh;
+      font-family: 'Fira Sans', sans-serif;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      justify-content: center;
-      text-align: center;
       padding: 2rem;
-      background: linear-gradient(160deg, #1e1030, #140c1e);
-      animation: fadeIn 1.5s ease;
     }
 
-    .hero h1 {
-      font-size: 5rem;
-      padding: 1rem 3rem;
-      background: var(--highlight);
-      border-radius: 12px;
-      backdrop-filter: blur(5px);
-      color: var(--accent);
-      animation: slideDown 1.5s ease;
-    }
-
-    .dashboard-btn {
-      margin-top: 2rem;
-      padding: 0.8rem 2.5rem;
-      border: 2px solid var(--accent);
-      background: transparent;
-      color: var(--accent);
-      border-radius: 8px;
-      font-size: 1.2rem;
-      transition: 0.3s ease;
-      cursor: pointer;
-    }
-
-    .dashboard-btn:hover {
-      background: #c084fc;
-      color: #fff;
-      transform: scale(1.05);
-    }
-
-    /* Dashboard Cards */
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      padding: 5rem 2rem;
-      background: #1b1129;
-    }
-
-    .card {
-      background: var(--card-bg);
-      padding: 2rem;
-      border-radius: 16px;
-      width: 300px;
-      max-width: 90%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeInUp 1s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .blog-slider {
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      background: #1f1329;
+      box-shadow: 0px 14px 80px rgba(0, 0, 0, 0.3);
+      padding: 25px;
+      border-radius: 25px;
+      height: 450px;
       position: relative;
+      overflow: hidden;
     }
 
-    .card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    .blog-slider__wrp {
+      display: flex;
     }
 
-    .card h3 {
-      color: var(--accent);
-      font-size: 1.4rem;
+    .blog-slider__item {
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
     }
 
-    .card p {
-      color: #c9bedc;
-      font-size: 0.95rem;
+    .swiper-slide-active .blog-slider__img img {
+      opacity: 1;
+      transition-delay: 0.3s;
     }
 
-    .card ul {
-      list-style: none;
-      padding-left: 1rem;
-      color: #bbb;
+    .swiper-slide-active .blog-slider__content > * {
+      opacity: 1;
+      transform: none;
     }
 
-    .card ul li::before {
-      content: '⟶';
-      margin-right: 6px;
-      color: var(--accent);
+    .blog-slider__img {
+  width: 300px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 4px 13px 30px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 30px;
+  flex-shrink: 0;
+  display: flex;              /* enable flexbox */
+  justify-content: center;    /* center horizontally */
+  align-items: center;        /* center vertically */
+  background-color: #2a1e3d;  /* optional, to show the bigger box */
+}
+
+.blog-slider__img img {
+  width: 100px;      /* smaller than container */
+  height: 100px;     /* fixed size */
+  object-fit: contain;  /* keep aspect ratio and don't crop */
+  border-radius: 20px; /* keep corners rounded */
+  opacity: 1;         /* make sure visible */
+  transition: all 0.3s;
+}
+
+
+    .blog-slider__content {
+      color: #eee;
+      flex: 1;
     }
 
-    .card .badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: var(--accent);
-      color: #140c1e;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.75rem;
-      border-radius: 4px;
-    }
-
-    /* Divider */
-    .divider {
-      text-align: center;
-      color: #777;
-      margin: 2rem auto;
-      font-size: 1rem;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: #100817;
-      color: #888;
+    .blog-slider__code {
+      color: #c084fc;
+      margin-bottom: 15px;
+      font-weight: 500;
       font-size: 0.9rem;
     }
 
-    footer span {
+    .blog-slider__title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .blog-slider__text {
+      color: #c9bedc;
+      margin-bottom: 30px;
+      line-height: 1.5em;
+    }
+
+    .blog-slider__button {
+      display: inline-block;
+      background-image: linear-gradient(147deg, #c084fc 0%, #a855f7 74%);
+      padding: 12px 30px;
+      border-radius: 50px;
+      color: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .blog-slider__button:hover {
+      background-position: right center;
+      opacity: 0.9;
+    }
+
+    .blog-slider__pagination {
+      position: absolute;
+      z-index: 21;
+      right: 20px;
+      width: 11px!important;
+      text-align: center;
+      left: auto!important;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    
+    .swiper-pagination-bullet {
+      width: 11px;
+      height: 11px;
       display: block;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
+      border-radius: 10px;
+      background: #c084fc;
+      opacity: 0.3;
+      margin: 8px 0;
+      transition: all .3s;
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .swiper-pagination-bullet-active {
+      opacity: 1;
+      background: #c084fc;
+      height: 30px;
+      box-shadow: 0px 0px 20px rgba(192, 132, 252, 0.3);
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 3rem;
+    @media screen and (max-width: 768px) {
+      .blog-slider {
+        height: auto;
       }
-      .features {
+
+      .blog-slider__item {
         flex-direction: column;
+        text-align: center;
+      }
+
+      .blog-slider__img {
+  width: 300px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 4px 13px 30px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 30px;
+  flex-shrink: 0;
+}
+
+
+      .blog-slider__pagination {
+        width: 100%!important;
+        display: flex;
+        justify-content: center;
         align-items: center;
+        transform: translateY(0);
+        bottom: 10px;
+        top: auto;
+        left: 0!important;
+      }
+
+      .swiper-pagination-bullet {
+        margin: 0 5px;
+      }
+
+      .swiper-pagination-bullet-active {
+        width: 30px;
+        height: 11px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>Ashveil</h1>
-    <a href="/dashboard">
-      <button class="dashboard-btn">Dashboard</button>
-    </a>
-  </section>
 
-  <!-- Feature Dashboard Cards -->
-  <section class="features">
-    <div class="card">
-      <span class="badge">Core</span>
-      <h3>Rootkit Module</h3>
-      <p>Installs a persistent rootkit that hides processes, files, and registry entries from user tools.</p>
-      <ul>
-        <li>Process hiding</li>
-        <li>Stealth startup</li>
-        <li>AV evasion</li>
-      </ul>
+    
+<div class="blog-slider swiper">
+  <div class="blog-slider__wrp swiper-wrapper">
+
+    <!-- Card 1 -->
+    <div class="blog-slider__item swiper-slide">
+      <div class="blog-slider__img">
+        <img src="{{ url_for('static', filename='img/hidden.png') }}" alt="Rootkit">
+      </div>
+      <div class="blog-slider__content">
+        <span class="blog-slider__code">Module: Core</span>
+        <div class="blog-slider__title">Rootkit Module</div>
+        <div class="blog-slider__text">
+          Installs a persistent rootkit that hides processes, files, and registry entries.
+        </div>
+        <a href="#" class="blog-slider__button">READ MORE</a>
+      </div>
     </div>
 
-    <div class="card">
-      <span class="badge">Live</span>
-      <h3>Command & Control</h3>
-      <p>Full remote access using encrypted payloads and socket control through C2 interface.</p>
-      <ul>
-        <li>Payload streaming</li>
-        <li>Shell access</li>
-        <li>Payload selector</li>
-      </ul>
+    <!-- Card 2 -->
+    <div class="blog-slider__item swiper-slide">
+      <div class="blog-slider__img">
+        <img src="{{ url_for('static', filename='img/c2.png') }}" alt="C2 Access">
+      </div>
+      <div class="blog-slider__content">
+        <span class="blog-slider__code">Module: Live</span>
+        <div class="blog-slider__title">Command & Control</div>
+        <div class="blog-slider__text">
+          Full remote access using encrypted payloads and socket control through the C2 interface.
+        </div>
+        <a href="#" class="blog-slider__button">READ MORE</a>
+      </div>
     </div>
 
-    <div class="card">
-      <span class="badge">Tools</span>
-      <h3>Keylogger & Shell</h3>
-      <p>Active payloads include a silent keylogger and command shell with elevated permission support.</p>
-      <ul>
-        <li>Keystroke logging</li>
-        <li>Auto-send logs</li>
-        <li>Root access shell</li>
-      </ul>
+    <!-- Card 3 -->
+    <div class="blog-slider__item swiper-slide">
+      <div class="blog-slider__img">
+        <img src="{{ url_for('static', filename='img/payload.png') }}" alt="Keylogger">
+      </div>
+      <div class="blog-slider__content">
+        <span class="blog-slider__code">Module: Tools</span>
+        <div class="blog-slider__title">Keylogger & Shell</div>
+        <div class="blog-slider__text">
+          Includes a silent keylogger and command shell with elevated permission support.
+        </div>
+        <a href="#" class="blog-slider__button">READ MORE</a>
+      </div>
     </div>
-  </section>
 
-  <!-- Divider -->
-  <div class="divider">▼ Ashveil is an educational malware simulation tool ▼</div>
+    <div class="blog-slider__item swiper-slide">
+      <div class="blog-slider__img">
+        <img src="{{ url_for('static', filename='img/screen.png') }}" alt="Keylogger">
+      </div>
+      <div class="blog-slider__content">
+        <span class="blog-slider__code">lets start</span>
+        <div class="blog-slider__title">lets start</div>
+        <div class="blog-slider__text">
+          thank you for reading and lets start using this tool
+        </div>
+        <a href="#" class="blog-slider__button">READ MORE</a>
+      </div>
+    </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Ashveil Project – Educational Use Only</p>
-    <span>This site is for demonstration purposes only. Do not use in real-world systems. The creators are not liable for misuse.</span>
-  </footer>
+  </div>
+  <div class="blog-slider__pagination swiper-pagination"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script>
+ const swiper = new Swiper('.blog-slider', {
+  spaceBetween: 30,
+  slidesPerView: 1,
+  loop: true,
+  effect: 'slide',
+  pagination: {
+    el: '.blog-slider__pagination',
+    clickable: true,
+  },
+  // Disable built-in mousewheel control:
+  mousewheel: false,
+});
+
+let canScroll = true;
+const scrollCooldown = 600; // ms cooldown between scrolls
+
+document.querySelector('.blog-slider').addEventListener('wheel', (e) => {
+  if (!canScroll) {
+    e.preventDefault();
+    return;
+  }
+
+  if (Math.abs(e.deltaY) < 10) {
+    // Ignore very small scrolls
+    return;
+  }
+
+  canScroll = false;
+
+  if (e.deltaY > 0) {
+    swiper.slideNext();
+  } else {
+    swiper.slidePrev();
+  }
+
+  setTimeout(() => {
+    canScroll = true;
+  }, scrollCooldown);
+
+  e.preventDefault();
+}, { passive: false });
+
+</script>
 
 </body>
 </html>

@@ -34,6 +34,12 @@ def home():
 def dashboard():
     return render_template('dashboard.html')
 
+# internal documentation
+
+@app.route('/payloads')
+def payloads():
+    return render_template('payloads.html')
+
 def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')
     print(" ░█████╗░░██████╗██╗░░██╗██╗░░░██╗███████╗██╗██╗░░░░░")
