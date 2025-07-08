@@ -36,9 +36,13 @@ def dashboard():
 
 # internal documentation
 
-@app.route('/payloads')
+@app.route('/documentation/payloads')
 def payloads():
     return render_template('payloads.html')
+
+@app.route('/documentation/rootkit')
+def rootkit():
+    return render_template('rootkit.html')
 
 def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')
