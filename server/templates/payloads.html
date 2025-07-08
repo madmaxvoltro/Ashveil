@@ -1,1 +1,244 @@
-payloads
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payload Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #140c1e;
+      --card-bg: #1f1329;
+      --footer-bg: #291a3e;
+      --text-main: #e0d5ff;
+      --text-sub: #bfa8e2;
+      --border: #38264f;
+      --shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Fira Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 2rem 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .card-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      max-width: 100%;
+    }
+
+    .card {
+      width: 48%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card.left {
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      border-left: none;
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    .card.right {
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      border-right: none;
+      margin-right: 0;
+      margin-left: auto;
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .card-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-sub);
+    }
+
+    .card-metadata {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      background-color: #251936;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .metadata-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metadata-title {
+      font-weight: bold;
+      color: var(--text-main);
+    }
+
+    .metadata-value {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+    }
+
+    .card-footer {
+      background-color: var(--footer-bg);
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #b2a4cf;
+      border-top: 1px solid var(--border);
+      border-radius: 0 0 10px 10px;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .card {
+        width: 90%;
+        border-radius: 20px !important;
+      }
+
+      .card.left,
+      .card.right {
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Payloads Dashboard</h1>
+
+  <div class="card-container">
+    <!-- Left-aligned card -->
+    <div class="card left">
+      <div class="card-title">Payload Alpha</div>
+      <div class="card-description">
+        Passive network recon tool. Collects ARP, DNS, and open ports without raising alarms.
+      </div>
+      <div class="card-metadata">
+        <div class="metadata-item">
+          <span class="metadata-title">Type</span>
+          <span class="metadata-value">Recon</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Platform</span>
+          <span class="metadata-value">Linux</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Risk</span>
+          <span class="metadata-value">Low</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Created</span>
+          <span class="metadata-value">Jul 8, 2025</span>
+        </div>
+      </div>
+      <div class="card-footer">Updated 2 days ago</div>
+    </div>
+
+    <!-- Right-aligned card -->
+    <div class="card right">
+      <div class="card-title">Payload Beta</div>
+      <div class="card-description">
+        Auto-start registry persistence with encoded PowerShell dropper.
+      </div>
+      <div class="card-metadata">
+        <div class="metadata-item">
+          <span class="metadata-title">Type</span>
+          <span class="metadata-value">Persistence</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Platform</span>
+          <span class="metadata-value">Windows</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Risk</span>
+          <span class="metadata-value">High</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Size</span>
+          <span class="metadata-value">91KB</span>
+        </div>
+      </div>
+      <div class="card-footer">Updated: Today</div>
+    </div>
+
+    <!-- Left-aligned card -->
+    <div class="card left">
+      <div class="card-title">Payload Gamma</div>
+      <div class="card-description">
+        Moves laterally via WMI, mimicking scheduled system tasks for stealthy execution.
+      </div>
+      <div class="card-metadata">
+        <div class="metadata-item">
+          <span class="metadata-title">Type</span>
+          <span class="metadata-value">Movement</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Platform</span>
+          <span class="metadata-value">Windows</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Risk</span>
+          <span class="metadata-value">Medium</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Size</span>
+          <span class="metadata-value">76KB</span>
+        </div>
+      </div>
+      <div class="card-footer">Created: May 14, 2025</div>
+    </div>
+
+    <!-- Right-aligned card -->
+    <div class="card right">
+      <div class="card-title">Payload Omega</div>
+      <div class="card-description">
+        Encrypts data and exfiltrates to HTTPS C2. Deletes itself post-operation.
+      </div>
+      <div class="card-metadata">
+        <div class="metadata-item">
+          <span class="metadata-title">Type</span>
+          <span class="metadata-value">Exfiltration</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Platform</span>
+          <span class="metadata-value">Cross-platform</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Risk</span>
+          <span class="metadata-value">Critical</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Size</span>
+          <span class="metadata-value">120KB</span>
+        </div>
+      </div>
+      <div class="card-footer">Last test: 1 hour ago</div>
+    </div>
+  </div>
+
+</body>
+</html>
