@@ -38,11 +38,21 @@ def dashboard():
 
 @app.route('/documentation/payloads')
 def payloads():
-    return render_template('payloads.html')
+    if '.' in selected_code_file:
+       stripped_payload = selected_code_file.rsplit('.', 1)[0]
+    else:
+       stripped_payload = selected_code_file  # fallback if there's no dot
+
+    return render_template('payloads.html', payload=stripped_payload)
 
 @app.route('/documentation/rootkit')
 def rootkit():
     return render_template('rootkit.html')
+
+@app.route('/documentation/C2')
+def C2():
+    return render_template('c2.html')
+
 
 def info(message):
     os.system('cls' if os.name == 'nt' else 'clear')

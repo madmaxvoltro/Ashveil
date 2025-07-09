@@ -1,1 +1,185 @@
-rootkit
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rootkit Execution Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #140c1e;
+      --card-bg: #1f1329;
+      --text-main: #e0d5ff;
+      --text-sub: #bfa8e2;
+      --border: #38264f;
+      --highlight: #a678ff;
+      --line-glow: 0 0 8px #a678ff, 0 0 16px #a678ff;
+    }
+
+    body {
+      font-family: 'Fira Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .stage {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      width: 300px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .stage:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 25px #a678ff;
+    }
+
+    .stage-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .stage-desc {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+    }
+
+    .flow-line {
+      width: 4px;
+      height: 60px;
+      background: var(--highlight);
+      box-shadow: var(--line-glow);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 8px #a678ff, 0 0 16px #a678ff;
+      }
+      50% {
+        box-shadow: 0 0 18px #c392ff, 0 0 30px #c392ff;
+      }
+    }
+
+    /* AV Bypass Section */
+    .bypass-container {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin: 1rem 0;
+    }
+
+    .bypass-arrow {
+      width: 60px;
+      height: 4px;
+      background: var(--highlight);
+      box-shadow: var(--line-glow);
+      animation: pulse 2s infinite;
+    }
+
+    .bypass-label {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      text-align: center;
+      width: 140px;
+    }
+
+    .footer {
+      margin-top: 4rem;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      text-align: center;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rootkit Execution Flow</h1>
+
+  <div class="diagram">
+    <!-- Loader -->
+    <div class="stage">
+      <div class="stage-title">Loader (Installer)</div>
+      <div class="stage-desc">
+        Triggered by the attacker using the installation command. Begins execution chain inside victim environment silently.
+      </div>
+    </div>
+
+    <div class="flow-line"></div>
+
+    <!-- AV Evasion -->
+    <div class="stage">
+      <div class="stage-title">AV Evasion</div>
+      <div class="stage-desc">
+        Uses obfuscation, packers, API masking, or encryption to bypass Windows Defender or 3rd-party antivirus.
+      </div>
+    </div>
+
+    <!-- Bypass Visual -->
+    <div class="bypass-container">
+      <div class="bypass-arrow"></div>
+      <div class="bypass-label">Memory injection avoids disk detection</div>
+      <div class="bypass-arrow"></div>
+    </div>
+
+    <div class="flow-line"></div>
+
+    <!-- Code Injection -->
+    <div class="stage">
+      <div class="stage-title">Code Injection</div>
+      <div class="stage-desc">
+        Injects code into a trusted process (e.g. explorer.exe or svchost.exe) to inherit privileges and avoid detection.
+      </div>
+    </div>
+
+    <div class="flow-line"></div>
+
+    <!-- Persistence -->
+    <div class="stage">
+      <div class="stage-title">Persistence Mechanism</div>
+      <div class="stage-desc">
+        Adds registry keys or startup entries, or uses DLL sideloading to survive reboots and maintain access.
+      </div>
+    </div>
+
+    <div class="flow-line"></div>
+
+    <!-- Silent Execution Loop -->
+    <div class="stage">
+      <div class="stage-title">Silent Runtime Loop</div>
+      <div class="stage-desc">
+        Runs in the background, watching system behavior or waiting for attacker commands via C2 (Command & Control).
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    This diagram illustrates how a basic rootkit operates post-installation. It demonstrates evasion, injection, and persistence techniques without touching the disk again after initial load. Signal lines represent control flow.
+  </div>
+
+</body>
+</html>

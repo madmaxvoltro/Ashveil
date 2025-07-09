@@ -34,6 +34,11 @@
       margin-bottom: 4rem;
     }
 
+    h4 {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
     .card-container {
       display: flex;
       flex-direction: column;
@@ -124,50 +129,34 @@
         margin: 0 auto;
       }
     }
+
+    .a {
+        text-decoration: none;
+        color: white;
+
+    }
+
+    .a:hover {
+        color:#251936
+    }
   </style>
 </head>
 <body>
 
   <h1>Payloads Dashboard</h1>
+  <h4>current payload:  <a href="/code" class="a"> {{payload }}</a></h4>
 
   <div class="card-container">
     <!-- Left-aligned card -->
-    <div class="card left">
-      <div class="card-title">Payload Alpha</div>
+    <div class="card left"> 
+      <div class="card-title">http shell</div>
       <div class="card-description">
-        Passive network recon tool. Collects ARP, DNS, and open ports without raising alarms.
+        simple http shell that gives you accses to a terminal inside the victim pc
       </div>
       <div class="card-metadata">
         <div class="metadata-item">
           <span class="metadata-title">Type</span>
-          <span class="metadata-value">Recon</span>
-        </div>
-        <div class="metadata-item">
-          <span class="metadata-title">Platform</span>
-          <span class="metadata-value">Linux</span>
-        </div>
-        <div class="metadata-item">
-          <span class="metadata-title">Risk</span>
-          <span class="metadata-value">Low</span>
-        </div>
-        <div class="metadata-item">
-          <span class="metadata-title">Created</span>
-          <span class="metadata-value">Jul 8, 2025</span>
-        </div>
-      </div>
-      <div class="card-footer">Updated 2 days ago</div>
-    </div>
-
-    <!-- Right-aligned card -->
-    <div class="card right">
-      <div class="card-title">Payload Beta</div>
-      <div class="card-description">
-        Auto-start registry persistence with encoded PowerShell dropper.
-      </div>
-      <div class="card-metadata">
-        <div class="metadata-item">
-          <span class="metadata-title">Type</span>
-          <span class="metadata-value">Persistence</span>
+          <span class="metadata-value">shell</span>
         </div>
         <div class="metadata-item">
           <span class="metadata-title">Platform</span>
@@ -178,23 +167,50 @@
           <span class="metadata-value">High</span>
         </div>
         <div class="metadata-item">
-          <span class="metadata-title">Size</span>
-          <span class="metadata-value">91KB</span>
+          <span class="metadata-title">version</span>
+          <span class="metadata-value">V1.0</span>
         </div>
       </div>
-      <div class="card-footer">Updated: Today</div>
+      <div class="card-footer">Updated 2 weeks ago</div>
     </div>
 
-    <!-- Left-aligned card -->
-    <div class="card left">
-      <div class="card-title">Payload Gamma</div>
+    <!-- Right-aligned card -->
+    <div class="card right">
+      <div class="card-title">keylogger</div>
       <div class="card-description">
-        Moves laterally via WMI, mimicking scheduled system tasks for stealthy execution.
+        chunks of 3 chars will be sent through http to the attacker
       </div>
       <div class="card-metadata">
         <div class="metadata-item">
           <span class="metadata-title">Type</span>
-          <span class="metadata-value">Movement</span>
+          <span class="metadata-value">keylogger</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Platform</span>
+          <span class="metadata-value">Windows</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">Risk</span>
+          <span class="metadata-value">mid</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-title">version</span>
+          <span class="metadata-value">alpha</span>
+        </div>
+      </div>
+      <div class="card-footer">Updated: 2 months ago</div>
+    </div>
+
+    <!-- Left-aligned card -->
+    <div class="card left">
+      <div class="card-title">live screenviewer</div>
+      <div class="card-description">
+    a live screen viewer of the victim pc
+    </div>
+      <div class="card-metadata">
+        <div class="metadata-item">
+          <span class="metadata-title">Type</span>
+          <span class="metadata-value">viewer</span>
         </div>
         <div class="metadata-item">
           <span class="metadata-title">Platform</span>
@@ -205,11 +221,11 @@
           <span class="metadata-value">Medium</span>
         </div>
         <div class="metadata-item">
-          <span class="metadata-title">Size</span>
-          <span class="metadata-value">76KB</span>
+          <span class="metadata-title">version</span>
+          <span class="metadata-value">beta</span>
         </div>
       </div>
-      <div class="card-footer">Created: May 14, 2025</div>
+      <div class="card-footer">Created: 1 week ago</div>
     </div>
 
     <!-- Right-aligned card -->
