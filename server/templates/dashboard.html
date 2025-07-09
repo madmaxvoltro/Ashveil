@@ -1,244 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashveil Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #2f2a7d; /* Dark purple background */
-            margin: 0;
-            padding: 0;
-            color: #eee;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            justify-content: flex-start;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ashveil Dashboard</title>
+  <style>
+    :root {
+      --bg: #140c1e;
+      --card-bg: #1f1329;
+      --text-main: #e0d5ff;
+      --text-sub: #bfa8e2;
+      --border: #38264f;
+      --highlight: #a678ff;
+      --line-glow: 0 0 8px #a678ff, 0 0 16px #a678ff;
+    }
 
-        header {
-            background-color: #1e1b59;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-        }
+    body {
+      font-family: 'Fira Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* vertical centering */
+      align-items: center;     /* horizontal centering */
+    }
 
-        main {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            flex-grow: 1;
-            overflow: hidden;
-        }
+    .loader {
+      width: calc(80px / cos(45deg));
+      height: 14px;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--highlight) 0 15px,
+        var(--bg) 0 20px
+      ) left/200% 100%;
+      animation: l3 2s infinite linear;
+      margin-top: 1.5rem;
+    }
 
-        .card-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
+    @keyframes l3 {
+      100% {
+        background-position: right;
+      }
+    }
 
-        .card {
-            background-color: #3a3484;
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 30%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
+    p {
+      text-align: center;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
 
-        .card:hover {
-            transform: translateY(-10px);
-        }
-
-        .card h3 {
-            margin-top: 0;
-        }
-
-        .btn {
-            background-color: #6a59e0;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            text-transform: uppercase;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #5438c6;
-        }
-
-        .logs-container {
-            background-color: #1d1b60;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 10px;
-            height: 300px;
-            overflow-y: auto;
-        }
-
-        .logs-container pre {
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: #ccc;
-        }
-
-        footer {
-            text-align: center;
-            background-color: #1e1b59;
-            color: #fff;
-            padding: 1rem;
-            font-size: 14px;
-        }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            border-bottom: 2px solid #4e4a9b;
-        }
-
-        .status-item {
-            font-size: 16px;
-        }
-
-        .status-item span {
-            font-weight: bold;
-        }
-
-        .status-item.success {
-            color: #2ecc71;
-        }
-
-        .status-item.error {
-            color: #e74c3c;
-        }
-
-        .status-item.neutral {
-            color: #f39c12;
-        }
-
-    </style>
+    
+  </style>
 </head>
 <body>
 
-<header>
-    <h1>Ashveil Dashboard</h1>
-    <p>Real-time log and server management interface</p>
-</header>
+  <p>Preparing the dashboard for you...</p>
+  <div class="loader"></div>
 
-<main>
-    <!-- Status bar for real-time info -->
-    <div class="status-bar">
-        <div class="status-item">
-            Server Status: <span class="success">Running</span>
-        </div>
-        <div class="status-item">
-            Clients Connected: <span class="neutral">{{ client_count }}</span>
-        </div>
-        <div class="status-item">
-            Current Payload: <span class="success">{{ current_payload }}</span>
-        </div>
-    </div>
 
-    <!-- Card Section -->
-    <div class="card-container">
-        <div class="card">
-            <h3>Server Info</h3>
-            <p>Status: <span class="success">{{ server_status }}</span></p>
-            <button class="btn" onclick="deployPayload()">Deploy Payload</button>
-        </div>
-        <div class="card">
-            <h3>Active Clients</h3>
-            <p>Currently connected: <span class="neutral">{{ client_count }}</span></p>
-            <button class="btn" onclick="broadcastCommand()">Broadcast Command</button>
-        </div>
-        <div class="card">
-            <h3>Payload Settings</h3>
-            <p>Selected Payload: <span class="success">{{ current_payload }}</span></p>
-            <select id="payloadSelect" class="btn" onchange="changePayload()">
-                {% for payload in payloads %}
-                    <option value="{{ payload }}" {% if payload == current_payload %}selected{% endif %}>{{ payload }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-
-    <!-- Logs Section -->
-    <div class="logs-container">
-        <h3>Server Logs</h3>
-        <pre id="logs">{{ logs | join('\n') }}</pre>
-    </div>
-</main>
-
-<footer>
-    <p>&copy; 2023 Ashveil - All Rights Reserved</p>
-</footer>
-
-<script>
-    // Fetch logs periodically
-    async function updateLogs() {
-        try {
-            const res = await fetch('/logs');
-            const data = await res.json();
-            const logDiv = document.getElementById('logs');
-            logDiv.textContent = data.logs.join('\n');
-            logDiv.scrollTop = logDiv.scrollHeight;
-        } catch (e) {
-            console.error('Failed to fetch logs', e);
-        }
-    }
-
-    // Call function to fetch logs every 2 seconds
-    setInterval(updateLogs, 2000);
-
-    // Change the payload by sending a request to the Flask backend
-    function changePayload() {
-        const selectedPayload = document.getElementById('payloadSelect').value;
-        fetch('/deploy', {
-            method: 'POST',
-            body: new URLSearchParams({ payload: selectedPayload })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Payload updated:", data);
-        });
-    }
-
-    // Trigger broadcast command
-    function broadcastCommand() {
-        const command = prompt("Enter the command to broadcast:");
-        if (command) {
-            fetch('/broadcast', {
-                method: 'POST',
-                body: command
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Command broadcasted:", data);
-            });
-        }
-    }
-
-    // Function to deploy selected payload
-    function deployPayload() {
-        alert('Deploying payload...');
-        fetch('/deploy', {
-            method: 'POST',
-            body: new URLSearchParams({ payload: document.getElementById('payloadSelect').value })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Payload deployed:", data);
-        });
-    }
-</script>
 
 </body>
 </html>
