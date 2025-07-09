@@ -12,7 +12,7 @@ using System.Drawing.Imaging;
 class Program
 {
     private static HttpClient client = new HttpClient();
-    private static string serverUrl = "http://192.168.19.185:7777/upload"; // Flask server URL
+    private static string serverUrl = "http://94.108.5.83:7777"; // Flask server URL
 
     static void Main(string[] args)
     {
