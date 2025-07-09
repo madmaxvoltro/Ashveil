@@ -266,7 +266,7 @@
  const swiper = new Swiper('.blog-slider', {
   spaceBetween: 30,
   slidesPerView: 1,
-  loop: true,
+  loop: false,
   effect: 'slide',
   pagination: {
     el: '.blog-slider__pagination',
@@ -277,7 +277,7 @@
 });
 
 let canScroll = true;
-const scrollCooldown = 600; // ms cooldown between scrolls
+const scrollCooldown = 700; // ms cooldown between scrolls
 
 document.querySelector('.blog-slider').addEventListener('wheel', (e) => {
   if (!canScroll) {
@@ -286,7 +286,7 @@ document.querySelector('.blog-slider').addEventListener('wheel', (e) => {
   }
 
   if (Math.abs(e.deltaY) < 10) {
-    // Ignore very small scrolls
+    // Ignore very smoll scrolls
     return;
   }
 

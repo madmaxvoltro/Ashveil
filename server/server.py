@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, jsonify, Response, render_template
+from flask import Flask, request, send_from_directory, jsonify, Response, render_template, abort
 import os
 import time
 from blessed import Terminal
@@ -24,6 +24,23 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 available_code_files = [f for f in os.listdir(CODE_DIR) if os.path.isfile(os.path.join(CODE_DIR, f))]
 selected_code_file = None
+
+@app.route('/install', methods=['GET'])
+def installer():
+    user_agent = request.headers.get('User-Agent', '').lower()
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    if 'windows' in user_agent:
+        script_path = os.path.join(base_dir, 'install.ps1')
+    elif 'linux' in user_agent or 'ubuntu' in user_agent or 'macintosh' in user_agent or 'darwin' in user_agent:
+        script_path = os.path.join(base_dir, 'install.sh')
+    else:
+        abort(400, "Unsupported OS or unable to detect User-Agent")
+
+    if not os.path.isfile(script_path):
+        abort(404, f"{os.path.basename(script_path)} not found")
+
+    return send_file(script_path, as_attachment=True)
 
 # pages
 @app.route('/')
@@ -261,15 +278,23 @@ def serve_code():
 
 
 @app.route('/install', methods=['GET'])
-def download_v2():
-    try:
-        file_path = os.path.join(CURRENT_DIR, FILE_NAME)
-        if not os.path.exists(file_path):
-            return jsonify({'status': 'error', 'message': f'{FILE_NAME} not found on the server.'}), 404
-        return send_from_directory(CURRENT_DIR, FILE_NAME, as_attachment=True)
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+def installer():
+    user_agent = request.headers.get('User-Agent', '').lower()
 
+    # Get the directory of the current file (Flask app)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    if 'windows' in user_agent:
+        script_path = os.path.join(base_dir, 'install.ps1')
+    elif 'linux' in user_agent or 'ubuntu' in user_agent or 'macintosh' in user_agent or 'darwin' in user_agent:
+        script_path = os.path.join(base_dir, 'install.sh')
+    else:
+        abort(400, description="Unsupported OS or unable to detect")
+
+    if not os.path.exists(script_path):
+        abort(404, description=f"{os.path.basename(script_path)} not found")
+
+    return send_file(script_path, as_attachment=True)
 
 @app.route('/clean', methods=['GET'])
 def clean():

