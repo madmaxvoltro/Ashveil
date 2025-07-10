@@ -176,6 +176,13 @@ def payloads_doc():
     stripped = selected_code_file.split('.')[0]
     return render_template("payloads.html", payload=stripped)
 
+@app.route('/documentation/C2')
+def C2_doc():
+    return render_template("c2.html")
+
+@app.route('/documentation/rootkit')
+def rootkit_doc():
+    return render_template("rootkit.html")
 @app.route("/upload", methods=["POST"])
 def upload_screenshot():
     file = request.files.get("file")
