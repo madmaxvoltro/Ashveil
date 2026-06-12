@@ -1,5 +1,20 @@
 # **Ashveil - README** [Discountinued since 30 june 2025]
 
+## ⚠️ Project Discontinued
+This project is no longer maintained or supported.
+
+### Why
+This tool was originally created for malware education purposes. After further consideration, I've decided the potential for misuse outweighs the educational value, and I'm not comfortable continuing active development.
+
+### Status
+❌ No further updates or feature development
+❌ No security patches
+❌ No support — issues and PRs will not be reviewed
+✅ Repository remains public for reference (referenced in my research write-ups)
+
+### Use at your own risk
+The code as it stands may contain unaddressed security issues. If you choose to use, fork, or build on it, you do so entirely at your own risk and responsibility.
+
 ## Overview
 
 **Ashveil** is a powerful Windows-based tool designed to demonstrate advanced cybersecurity techniques, including **DLL injection**, **memory-based code execution**, and **C2 (Command and Control) server communication**. This tool provides a deep dive into **rootkit installation** and **stealth operations**, showcasing how attackers can gain remote control over compromised machines while evading common detection methods.
